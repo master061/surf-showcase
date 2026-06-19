@@ -1,0 +1,10 @@
+node_modules/
+server/node_modules/
+dist/
+.taro/
+.next/
+server/.next/
+.cache/
+*.log
+.DS_Store
+*.db

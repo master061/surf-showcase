@@ -1,0 +1,8 @@
+{
+  "projectname": "taro-app",
+  "setting": {
+    "compileHotReLoad": true,
+    "urlCheck": false
+  },
+  "description": "Taro 微信小程序"
+}
