@@ -1,0 +1,25 @@
+<view class="profile-wrap" wx:if="{{!fetching}}">
+  <view class="profile-card">
+    <!-- Avatar picker -->
+    <view class="avatar-section" bindtap="pickAvatar">
+      <image class="avatar-img" src="{{avatar}}" mode="aspectFill" wx:if="{{avatar}}"/>
+      <view class="avatar-big" wx:else>{{name?name[0]:'?'}}</view>
+      <view class="avatar-edit-badge">✏️</view>
+    </view>
+    <text class="avatar-hint">点击更换头像</text>
+
+    <view class="form-group" wx:if="{{error}}"><view class="error-msg">{{error}}</view></view>
+    <view class="form-group"><text class="form-label">邮箱</text><input class="form-input" value="{{email}}" bindinput="onInput" data-field="email" placeholder="your@email.com"/></view>
+    <view class="form-group"><text class="form-label">姓名</text><input class="form-input" value="{{name}}" bindinput="onInput" data-field="name"/></view>
+    <view class="form-row">
+      <view class="form-group" style="flex:1"><text class="form-label">学号</text><input class="form-input" value="{{studentId}}" bindinput="onInput" data-field="studentId"/></view>
+      <view class="form-group" style="flex:1"><text class="form-label">入学年份</text><picker mode="selector" range="{{years}}" value="{{yearIdx}}" bindchange="onYearChange"><view class="form-input">{{years[yearIdx]}}</view></picker></view>
+    </view>
+    <view class="form-group"><text class="form-label">学校/院系</text><input class="form-input" value="{{institution}}" bindinput="onInput" data-field="institution"/></view>
+    <view class="form-group"><text class="form-label">个人简介</text><textarea class="form-input form-textarea" value="{{bio}}" bindinput="onInput" data-field="bio" placeholder="介绍一下自己..." style="min-height:80px"/></view>
+    <button class="btn btn-primary btn-block btn-lg" bindtap="submit" loading="{{loading}}">保存修改</button>
+  </view>
+</view>
+<view wx:else style="padding:20px">
+  <view class="skeleton" style="height:60px;border-radius:12px;margin-bottom:12px" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
+</view>

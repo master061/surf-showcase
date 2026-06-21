@@ -1,0 +1,27 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": false,
+    "postcss": true,
+    "minified": true,
+    "coverView": true,
+    "nodeModules": false,
+    "showShadowRootInWxmlPanel": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "useCompilerPlugins": false,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "appid": "wx173a61a8eacc838e",
+  "projectname": "surf-showcase",
+  "libVersion": "3.16.1",
+  "compileType": "miniprogram",
+  "condition": {}
+}

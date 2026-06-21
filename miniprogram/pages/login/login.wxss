@@ -1,0 +1,12 @@
+.auth-page{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding:0 24px;background:linear-gradient(180deg,#f5f5f7 0%,#fff 100%)}
+.auth-bg{position:absolute;top:0;left:0;right:0;height:260px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:0 0 30px 30px;z-index:0}
+.auth-content{position:relative;z-index:1}
+.auth-logo{text-align:center;margin-bottom:40px}
+.logo-box{width:80px;height:80px;border-radius:22px;background:rgba(255,255,255,0.15);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:1px solid rgba(255,255,255,0.1);font-size:36px;color:#fff;font-weight:800}
+.logo-title{font-size:26px;font-weight:800;color:#1d1d1f;display:block;text-align:center;letter-spacing:-0.5px}
+.logo-desc{font-size:14px;color:#86868b;display:block;text-align:center;margin-top:6px}
+.btn-lg{padding:14px 0;border-radius:14px;font-size:16px;font-weight:700;margin-bottom:0}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:#e5e5ea}
+.auth-divider text{font-size:12px;color:#aeaeb2}
+.auth-agree{display:block;text-align:center;font-size:12px;color:#aeaeb2;margin-top:40px}

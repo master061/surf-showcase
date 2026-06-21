@@ -1,0 +1,14 @@
+<view class="auth-page">
+  <view class="auth-bg"></view>
+  <view class="auth-content">
+    <view class="auth-logo">
+      <view class="logo-box">S</view>
+      <text class="logo-title">SURF 科研展示</text>
+      <text class="logo-desc">展示成果 · 招募队友 · 跨学科交流</text>
+    </view>
+    <button class="btn btn-wechat btn-block btn-lg" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo" loading="{{loading}}">💬 微信一键登录</button>
+    <view class="auth-divider"><text>或</text></view>
+    <button class="btn btn-outline btn-block btn-lg" bindtap="goRegister">邮箱密码注册</button>
+    <text class="auth-agree">登录即表示同意《用户协议》</text>
+  </view>
+</view>
