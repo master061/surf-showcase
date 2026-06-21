@@ -1,0 +1,21 @@
+.list-wrap{padding:12px 16px}
+.search-bar{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.search-icon{font-size:16px}
+.search-input{flex:1;font-size:15px;border:none;outline:none;background:transparent}
+.suggestions{background:#fff;border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+.sg-label{font-size:11px;color:#aeaeb2;font-weight:600;padding:4px 4px 6px;display:block}
+.sg-item{font-size:14px;color:#1d1d1f;padding:8px 4px;display:block}
+.sg-tags{display:flex;flex-wrap:wrap;gap:4px;padding:4px}
+.tag-chip{background:#eff6ff;color:#6366f1;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500}
+.filter-scroll{overflow:hidden;margin-bottom:8px;white-space:nowrap}
+.filter-chips{display:inline-flex;gap:6px}
+.chip{padding:6px 14px;border-radius:100px;font-size:12px;font-weight:500;background:#f5f5f7;color:#515154;display:inline-block}
+.chip-active{background:#007aff;color:#fff;box-shadow:0 2px 8px rgba(0,122,255,0.2)}
+.filter-row{display:flex;gap:10px;margin-bottom:10px}
+.filter-picker{flex:1;padding:8px 12px;background:#fff;border-radius:10px;font-size:13px;font-weight:500;color:#1d1d1f;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.sort-row{display:flex;gap:0;background:#f5f5f7;border-radius:10px;padding:3px;margin-bottom:14px}
+.sort-opt{flex:1;text-align:center;padding:7px 0;font-size:13px;font-weight:500;color:#86868b;border-radius:8px}
+.sort-opt.active{background:#fff;color:#1d1d1f;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px}
+.page-btn{padding:6px 14px;border-radius:8px;font-size:12px;border:1px solid #d1d5db;color:#374151}
+.page-info{font-size:12px;color:#6b7280}

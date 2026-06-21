@@ -1,0 +1,70 @@
+<view class="dash-wrap" wx:if="{{isLoggedIn}}">
+  <view class="dash-top">
+    <view class="dash-user">
+      <text class="dash-avatar">{{user.name?user.name[0]:'?'}}</text>
+      <view class="dash-info">
+        <view class="dash-name">{{user.name}} <text class="dash-role">{{user.role==='ADMIN'?'管理员':'学生'}}</text></view>
+        <text class="dash-email">{{user.email}} · {{user.institution||''}}</text>
+      </view>
+      <navigator url="/pages/profile/profile" class="dash-edit-btn">编辑</navigator>
+    </view>
+  </view>
+
+  <view class="stats-card">
+    <view class="stat-item"><text class="stat-num grad">{{list.length}}</text><text class="stat-lbl">我的项目</text></view>
+    <view class="stat-div"></view>
+    <view class="stat-item"><text class="stat-num grad">{{totalVotes}}</text><text class="stat-lbl">总获票</text></view>
+    <view class="stat-div"></view>
+    <view class="stat-item"><text class="stat-num grad">{{user.year||'-'}}</text><text class="stat-lbl">入学年份</text></view>
+    <view class="stat-div"></view>
+    <view class="stat-item"><text class="stat-num gold">{{recruitProjects.length}}</text><text class="stat-lbl">招人中</text></view>
+  </view>
+
+  <view class="dash-header"><text class="dash-title">📦 我的项目</text><view class="pub-btn" bindtap="goCreate">+ 发布</view></view>
+
+  <view wx:if="{{loading}}">
+    <view class="skeleton" style="height:80px;margin-bottom:10px" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+  </view>
+  <view wx:elif="{{list.length===0}}">
+    <view class="empty-state"><text class="empty-state-icon">📭</text><text class="empty-state-text">还没有发布任何项目</text><button class="btn btn-primary btn-sm" bindtap="goCreate">发布第一个项目</button></view>
+  </view>
+  <view wx:else>
+    <view wx:if="{{recruitProjects.length>0}}">
+      <text class="group-label gold">🔍 招人中</text>
+      <view class="proj-item recruit-border" wx:for="{{recruitProjects}}" wx:key="_id">
+        <view class="proj-icon" style="background:linear-gradient(135deg,#d97706,#f59e0b)">🔍</view>
+        <view class="proj-info">
+          <navigator url="/pages/detail/detail?id={{item._id}}" class="proj-title">{{item.title}} <text class="badge badge-recruit" style="font-size:9px">招人中</text></navigator>
+          <text class="proj-meta">{{item.field}} · ★ {{item.voteCount||0}}</text>
+        </view>
+        <view class="proj-actions">
+          <text class="action-edit" bindtap="goEdit" data-id="{{item._id}}">编辑</text>
+          <navigator url="/pages/detail/detail?id={{item._id}}" class="action-view">查看</navigator>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{doneProjects.length>0}}">
+      <text class="group-label green" style="margin-top:{{recruitProjects.length>0?6:0}}px">✅ 已完成</text>
+      <view class="proj-item" wx:for="{{doneProjects}}" wx:key="_id">
+        <view class="proj-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)">{{item.field?item.field[0]:'?'}}</view>
+        <view class="proj-info">
+          <navigator url="/pages/detail/detail?id={{item._id}}" class="proj-title">{{item.title}} <text class="badge badge-done" style="font-size:9px">已完成</text></navigator>
+          <text class="proj-meta">{{item.field}} · ★ {{item.voteCount||0}}</text>
+        </view>
+        <view class="proj-actions">
+          <text class="action-edit" bindtap="goEdit" data-id="{{item._id}}">编辑</text>
+          <navigator url="/pages/detail/detail?id={{item._id}}" class="action-view">查看</navigator>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view style="margin-top:24px;text-align:center"><text class="logout-btn" bindtap="logout">退出登录</text></view>
+  <view style="height:20px"/>
+</view>
+
+<view wx:else class="not-logged-in">
+  <text class="lock-icon">🔒</text>
+  <text class="lock-text">请先登录后查看</text>
+  <button class="btn btn-primary" style="padding:12px 32px;border-radius:12px;font-size:15px" bindtap="goLogin">去登录</button>
+</view>

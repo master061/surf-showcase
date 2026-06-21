@@ -1,0 +1,62 @@
+<view class="pg">
+  <!-- Hero -->
+  <view class="hero">
+    <view class="hero-top">
+      <text class="hero-greeting">👋 欢迎{{user ? '回来，'+user.name : '！'}}</text>
+      <view class="hero-noti">🔔</view>
+    </view>
+    <text class="hero-title">科研灵感\n从这里开始</text>
+    <text class="hero-sub">展示成果 · 招募队友 · 跨学科交流</text>
+    <view class="stats-row">
+      <view class="stat-card"><text class="stat-num blue">{{stats.projects}}</text><text class="stat-lbl">项目总数</text></view>
+      <view class="stat-card"><text class="stat-num gold">{{stats.recruitCount}}</text><text class="stat-lbl">正在招人</text></view>
+      <view class="stat-card"><text class="stat-num green">{{stats.fields}}</text><text class="stat-lbl">研究领域</text></view>
+    </view>
+    <view class="action-row">
+      <view class="action-btn action-browse" bindtap="goProjects">🔍 浏览项目</view>
+      <view class="action-btn action-publish" bindtap="onAction">{{user ? '🚀 发布项目' : '🔑 登录'}}</view>
+    </view>
+  </view>
+
+  <!-- Recruiting -->
+  <view class="section" wx:if="{{recruitProjects.length>0}}">
+    <view class="sec-header"><text class="sec-title">🔍 正在招人</text><navigator url="/pages/projects/projects?status=RECRUITING" class="sec-more">查看全部 →</navigator></view>
+    <view class="recruit-card" wx:for="{{recruitProjects}}" wx:key="_id">
+      <project-card project="{{item}}"/>
+    </view>
+  </view>
+
+  <!-- Fields -->
+  <view class="section">
+    <view class="sec-header"><text class="sec-title">📂 研究领域</text></view>
+    <view class="field-grid">
+      <view class="field-item" wx:for="{{fields}}" wx:for-index="i" wx:key="*this" bindtap="goProjects" data-field="{{item}}">
+        <text class="field-icon">{{fieldIcons[i]}}</text>
+        <text class="field-name">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Hot -->
+  <view class="section" wx:if="{{!loading}}">
+    <view class="sec-header"><text class="sec-title">🔥 热门推荐</text><navigator url="/pages/projects/projects?sort=hot" class="sec-more">更多 →</navigator></view>
+    <block wx:if="{{hotProjects.length>0}}">
+      <project-card wx:for="{{hotProjects}}" wx:key="_id" project="{{item}}"/>
+    </block>
+    <block wx:else>
+      <view class="empty-state"><text class="empty-state-icon">📭</text></view>
+    </block>
+  </view>
+
+  <!-- Latest -->
+  <view class="section" wx:if="{{!loading}}">
+    <view class="sec-header"><text class="sec-title">✨ 最新发布</text><navigator url="/pages/projects/projects" class="sec-more">更多 →</navigator></view>
+    <project-card wx:for="{{latestProjects}}" wx:key="_id" project="{{item}}"/>
+  </view>
+
+  <!-- Skeleton -->
+  <view class="section" wx:if="{{loading}}">
+    <view class="skeleton" style="height:120px;margin-bottom:10px" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+  </view>
+  <view style="height:20px"/>
+</view>

@@ -1,0 +1,17 @@
+<view class="page-wrap">
+  <view class="auth-card">
+    <text class="page-title">学生注册</text>
+    <text class="page-sub">加入 SURF 科研展示平台</text>
+    <view class="form-group" wx:if="{{error}}"><view class="error-msg">{{error}}</view></view>
+    <view class="form-group"><text class="form-label">姓名 *</text><input class="form-input" value="{{name}}" bindinput="onInput" data-field="name" placeholder="你的姓名"/></view>
+    <view class="form-group"><text class="form-label">邮箱 *</text><input class="form-input" value="{{email}}" bindinput="onInput" data-field="email" placeholder="your@email.com"/></view>
+    <view class="form-group"><text class="form-label">密码（至少6位）*</text><input class="form-input" password value="{{password}}" bindinput="onInput" data-field="password" placeholder="至少6位密码"/></view>
+    <view class="form-group"><text class="form-label">学号</text><input class="form-input" value="{{studentId}}" bindinput="onInput" data-field="studentId" placeholder="输入学号"/></view>
+    <view class="form-row">
+      <view class="form-group" style="flex:1"><text class="form-label">学校/院系</text><input class="form-input" value="{{institution}}" bindinput="onInput" data-field="institution" placeholder="计算机科学与技术学院"/></view>
+      <view class="form-group" style="flex:1"><text class="form-label">入学年份</text><picker mode="selector" range="{{years}}" value="{{yearIdx}}" bindchange="onYearChange"><view class="form-input">{{years[yearIdx]}}</view></picker></view>
+    </view>
+    <button class="btn btn-primary btn-block btn-lg" bindtap="submit" loading="{{loading}}">注册</button>
+    <view class="auth-link">已有账号？<text class="link" bindtap="goLogin">立即登录</text></view>
+  </view>
+</view>

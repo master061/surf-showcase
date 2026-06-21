@@ -1,0 +1,49 @@
+<view class="create-wrap" wx:if="{{!fetching}}">
+  <view class="create-card">
+    <text class="form-label">项目状态</text>
+    <view class="status-toggle">
+      <view class="st-opt {{status==='COMPLETED'?'active done':''}}" data-value="COMPLETED" bindtap="toggleStatus">✅ 已完成</view>
+      <view class="st-opt {{status==='RECRUITING'?'active recruit':''}}" data-value="RECRUITING" bindtap="toggleStatus">🔍 招人中</view>
+    </view>
+
+    <view class="form-group" wx:if="{{error}}"><view class="error-msg">{{error}}</view></view>
+    <view class="form-group"><text class="form-label">标题 *</text><input class="form-input" value="{{title}}" bindinput="onInput" data-field="title" placeholder="输入项目标题"/></view>
+    <view class="form-group"><text class="form-label">领域 *</text><picker mode="selector" range="{{fields}}" value="{{field}}" bindchange="onFieldChange"><view class="form-input">{{fields[field]}}</view></picker></view>
+    <view class="form-row">
+      <view class="form-group" style="flex:1"><text class="form-label">姓名</text><input class="form-input" value="{{studentName}}" bindinput="onInput" data-field="studentName"/></view>
+      <view class="form-group" style="flex:1"><text class="form-label">学校/院系</text><input class="form-input" value="{{institution}}" bindinput="onInput" data-field="institution"/></view>
+    </view>
+    <view class="form-row">
+      <view class="form-group" style="flex:1"><text class="form-label">项目年份</text><picker mode="selector" range="{{years}}" value="{{year}}" bindchange="onYearChange"><view class="form-input">{{years[year]}}</view></picker></view>
+      <view class="form-group" style="flex:1"><text class="form-label">项目类型</text><picker mode="selector" range="{{types}}" value="{{type}}" bindchange="onTypeChange"><view class="form-input">{{types[type]}}</view></picker></view>
+    </view>
+    <view class="form-group"><text class="form-label">{{isRecruit?'项目计划 *':'详细介绍 *'}}</text><textarea class="form-input form-textarea" value="{{content}}" bindinput="onInput" data-field="content" style="min-height:120px"/></view>
+    <view class="form-group"><text class="form-label">摘要 *</text><textarea class="form-input form-textarea" value="{{abstract}}" bindinput="onInput" data-field="abstract" style="min-height:70px"/></view>
+    <view class="form-group"><text class="form-label">封面图</text>
+      <view class="thumb-picker" bindtap="pickThumb">
+        <image class="thumb-preview" src="{{thumbnail}}" mode="aspectFill" wx:if="{{thumbnail}}"/>
+        <view class="thumb-placeholder" wx:else><text class="thumb-icon">📷</text><text class="thumb-text">点击选择封面图</text></view>
+      </view>
+      <input class="form-input" value="{{thumbnail}}" bindinput="onInput" data-field="thumbnail" placeholder="或输入图片URL" style="margin-top:8px"/>
+    </view>
+    <view class="form-group"><text class="form-label">标签（逗号分隔）</text><input class="form-input" value="{{tags}}" bindinput="onInput" data-field="tags"/></view>
+
+    <view wx:if="{{!isRecruit}}">
+      <view class="form-group"><text class="form-label">参与成员</text><input class="form-input" value="{{members}}" bindinput="onInput" data-field="members"/></view>
+      <view class="form-group"><text class="form-label">指导老师</text><input class="form-input" value="{{advisor}}" bindinput="onInput" data-field="advisor"/></view>
+      <view class="form-group"><text class="form-label">成果链接</text><input class="form-input" value="{{resultLinks}}" bindinput="onInput" data-field="resultLinks"/></view>
+    </view>
+    <view wx:if="{{isRecruit}}">
+      <view class="form-row">
+        <view class="form-group" style="flex:1"><text class="form-label">招募人数</text><picker mode="selector" range="{{recruitCountOpts}}" value="{{recruitCount-1}}" bindchange="onRecruitCountChange"><view class="form-input">{{recruitCount?recruitCount+'人':'选择人数'}}</view></picker></view>
+        <view class="form-group" style="flex:1"><text class="form-label">预期周期</text><picker mode="selector" range="{{durationOpts}}" bindchange="onDurationChange"><view class="form-input">{{expectedDuration||'选择周期'}}</view></picker></view>
+      </view>
+      <view class="form-group"><text class="form-label">联系方式</text><input class="form-input" value="{{contactInfo}}" bindinput="onInput" data-field="contactInfo"/></view>
+      <view class="form-group"><text class="form-label">招募要求</text><textarea class="form-input form-textarea" value="{{recruitRequirements}}" bindinput="onInput" data-field="recruitRequirements" style="min-height:70px"/></view>
+    </view>
+    <button class="btn btn-primary btn-block btn-lg" bindtap="submit" loading="{{loading}}">保存修改</button>
+  </view>
+</view>
+<view wx:else style="padding:20px">
+  <view class="skeleton" style="height:60px;border-radius:12px;margin-bottom:12px" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+</view>
