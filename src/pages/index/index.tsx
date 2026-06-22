@@ -27,6 +27,11 @@ export default function Index() {
     }).finally(() => setLoading(false))
   }, [])
 
+  const totalVotes = [...hotProjects, ...latestProjects].reduce((sum, p, i, arr) => {
+    if (arr.findIndex(x => x.id === p.id) !== i) return sum
+    return sum + (p._count?.votes || 0)
+  }, 0)
+
   if (loading) {
     return (
       <View style={{ padding: '20px 16px' }}>
@@ -38,37 +43,54 @@ export default function Index() {
   return (
     <View style={{ padding: '0 0 12px' }}>
       {/* Hero */}
-      <View style={{ background: 'linear-gradient(135deg,#1e40af,#3730a3)', padding: '32px 20px 28px' }}>
-        <Text style={{ fontSize: 26, fontWeight: 700, color: '#fff', display: 'block' }}>SURF 科研展示</Text>
-        <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 6, lineHeight: 1.6 }}>
-          展示 Summer Undergraduate Research Fellowship 优秀科研成果
+      <View style={{ position: 'relative', background: 'linear-gradient(135deg,#1e40af 0%,#3730a3 100%)', padding: '36px 20px 48px', overflow: 'hidden' }}>
+        {/* Decorative circles */}
+        <View style={{ position: 'absolute', width: 220, height: 220, borderRadius: 110, background: 'rgba(255,255,255,0.04)', top: -100, right: -60 }} />
+        <View style={{ position: 'absolute', width: 140, height: 140, borderRadius: 70, background: 'rgba(255,255,255,0.06)', top: 60, right: 40 }} />
+        <View style={{ position: 'absolute', width: 100, height: 100, borderRadius: 50, background: 'rgba(255,255,255,0.05)', bottom: 10, left: -30 }} />
+        {/* Grid dots pattern */}
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.03 }}>
+          {Array.from({ length: 6 }).map((_, r) => (
+            Array.from({ length: 8 }).map((_, c) => (
+              <View key={`${r}-${c}`} style={{ position: 'absolute', width: 3, height: 3, borderRadius: 1.5, background: '#fff', top: 20 + r * 40, left: 20 + c * 50 }} />
+            ))
+          ))}
+        </View>
+        <Text style={{ fontSize: 28, fontWeight: 800, color: '#fff', display: 'block', position: 'relative', zIndex: 1, letterSpacing: 1 }}>SURF 科研展示</Text>
+        <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, position: 'relative', zIndex: 1, letterSpacing: 0.5 }}>
+          Summer Undergraduate Research Fellowship
         </Text>
-        <View style={{ marginTop: 20, display: 'flex', gap: 10 }}>
-          <Navigator url="/pages/projects/index" className="btn" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', borderRadius: 8, padding: '8px 16px', fontSize: 13, flex: 1, textAlign: 'center' }}>浏览项目</Navigator>
+        <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.78)', marginTop: 8, lineHeight: 1.6, position: 'relative', zIndex: 1 }}>
+          探索优秀本科生科研成果，发现前沿研究方向
+        </Text>
+        <View style={{ marginTop: 22, display: 'flex', gap: 10, position: 'relative', zIndex: 1 }}>
+          <Navigator url="/pages/projects/index" className="btn" style={{ background: 'transparent', color: '#fff', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', border: '1px solid rgba(255,255,255,0.35)' }}>浏览项目</Navigator>
           {isLoggedIn ? (
-            <Navigator url="/pages/create/index" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 8, padding: '8px 16px', fontSize: 13, flex: 1, textAlign: 'center' }}>发布项目</Navigator>
+            <Navigator url="/pages/create/index" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', fontWeight: 600 }}>发布项目</Navigator>
           ) : (
-            <Navigator url="/pages/auth/login" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 8, padding: '8px 16px', fontSize: 13, flex: 1, textAlign: 'center' }}>登录</Navigator>
+            <Navigator url="/pages/auth/login/index" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', fontWeight: 600 }}>登录</Navigator>
           )}
         </View>
+        {/* Bottom curve */}
+        <View style={{ position: 'absolute', bottom: 0, left: -20, right: -20, height: 32, background: '#f3f4f6', borderRadius: '50% 50% 0 0' }} />
       </View>
 
       {/* Stats */}
-      <View className="card" style={{ margin: '-14px 16px 16px', borderRadius: 12, padding: 14, position: 'relative', zIndex: 1 }}>
+      <View className="card" style={{ margin: '-18px 16px 16px', borderRadius: 16, padding: 16, position: 'relative', zIndex: 1, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
         <View className="flex items-center justify-between">
           <View className="text-center" style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: 700, color: '#1e40af', display: 'block' }}>{stats.projects}</Text>
-            <Text style={{ fontSize: 11, color: '#9ca3af' }}>项目总数</Text>
+            <Text style={{ fontSize: 22, fontWeight: 800, color: '#1e40af', display: 'block', fontFeatureSettings: '"tnum"', letterSpacing: -0.5 }}>{stats.projects}</Text>
+            <Text style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>项目总数</Text>
           </View>
           <View style={{ width: 1, height: 28, background: '#e5e7eb' }} />
           <View className="text-center" style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: 700, color: '#1e40af', display: 'block' }}>{stats.fields}</Text>
-            <Text style={{ fontSize: 11, color: '#9ca3af' }}>研究领域</Text>
+            <Text style={{ fontSize: 22, fontWeight: 800, color: '#10b981', display: 'block', fontFeatureSettings: '"tnum"', letterSpacing: -0.5 }}>{stats.fields}</Text>
+            <Text style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>研究领域</Text>
           </View>
           <View style={{ width: 1, height: 28, background: '#e5e7eb' }} />
           <View className="text-center" style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: 700, color: '#1e40af', display: 'block' }}>{isLoggedIn ? user?.name?.[0] || '-' : '-'}</Text>
-            <Text style={{ fontSize: 11, color: '#9ca3af' }}>{isLoggedIn ? '已登录' : '未登录'}</Text>
+            <Text style={{ fontSize: 22, fontWeight: 800, color: '#f97316', display: 'block', fontFeatureSettings: '"tnum"', letterSpacing: -0.5 }}>{totalVotes}</Text>
+            <Text style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>累计获票</Text>
           </View>
         </View>
       </View>

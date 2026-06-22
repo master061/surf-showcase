@@ -1,4 +1,4 @@
-import { View, Text, Input, Textarea, Picker, Button } from '@tarojs/components'
+import { View, Text, Input, Textarea, Picker, Button, Image } from '@tarojs/components'
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
 import { useAuth } from '../../components/AuthStore'
@@ -29,26 +29,97 @@ export default function Create() {
         studentName: f.studentName, institution: f.institution,
         year: years[f.year], type: typeValues[f.type],
       })
-      Taro.redirectTo({ url: `/pages/detail/index?id=${d.id}` })
+      Taro.showToast({ title: '发布成功', icon: 'success' })
+      setTimeout(() => Taro.redirectTo({ url: `/pages/detail/index?id=${d.id}` }), 600)
     } catch { setError('发布失败') } finally { setLoading(false) }
   }
 
+  const tagChips = f.tags ? f.tags.split(',').map(t => t.trim()).filter(Boolean) : []
+
   return (
-    <View style={{ padding: '12px 16px' }}>
-      <Text style={{ fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 16 }}>发布科研项目</Text>
-      <View className="card" style={{ borderRadius: 12, padding: 20 }}>
-        {error && <View style={{ background: '#fef2f2', color: '#dc2626', padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 14 }}>{error}</View>}
-        <View className="input-group"><Text className="input-label">标题 *</Text><Input value={f.title} onInput={e => h('title', e.detail.value)} placeholder="输入项目标题" className="input" /></View>
-        <View className="input-group"><Text className="input-label">领域 *</Text><Picker mode="selector" range={fields} value={f.field} onChange={e => h('field', Number(e.detail.value))}><View className="input">{fields[f.field]}</View></Picker></View>
-        <View className="input-group"><Text className="input-label">姓名 *</Text><Input value={f.studentName} onInput={e => h('studentName', e.detail.value)} className="input" placeholder="你的姓名" /></View>
-        <View className="input-group"><Text className="input-label">学校/院系 *</Text><Input value={f.institution} onInput={e => h('institution', e.detail.value)} className="input" placeholder="计算机科学与技术学院" /></View>
-        <View className="input-group"><Text className="input-label">项目年份</Text><Picker mode="selector" range={years} value={f.year} onChange={e => h('year', Number(e.detail.value))}><View className="input">{years[f.year]}</View></Picker></View>
-        <View className="input-group"><Text className="input-label">项目类型</Text><Picker mode="selector" range={types} value={f.type} onChange={e => h('type', Number(e.detail.value))}><View className="input">{types[f.type]}</View></Picker></View>
-        <View className="input-group"><Text className="input-label">摘要 *</Text><Textarea value={f.abstract} onInput={e => h('abstract', e.detail.value)} className="input" placeholder="简要描述你的项目..." style={{ minHeight: 72, lineHeight: 1.6 }} /></View>
-        <View className="input-group"><Text className="input-label">详细介绍 *</Text><Textarea value={f.content} onInput={e => h('content', e.detail.value)} className="input" placeholder="详细描述你的项目内容、方法、成果..." style={{ minHeight: 140, lineHeight: 1.6 }} /></View>
-        <View className="input-group"><Text className="input-label">封面图 URL</Text><Input value={f.thumbnail} onInput={e => h('thumbnail', e.detail.value)} className="input" placeholder="https://example.com/image.jpg" /></View>
-        <View className="input-group"><Text className="input-label">标签（逗号分隔）</Text><Input value={f.tags} onInput={e => h('tags', e.detail.value)} className="input" placeholder="例如：机器学习, 计算机视觉, Python" /></View>
-        <Button className="btn btn-primary btn-block" style={{ marginTop: 12, borderRadius: 10, padding: 12, fontSize: 15 }} loading={loading} onClick={submit}>发布项目</Button>
+    <View style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Scrollable content */}
+      <View style={{ flex: 1, padding: '12px 16px', paddingBottom: 80 }}>
+        <Text style={{ fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 4, display: 'block' }}>发布科研项目</Text>
+        <Text style={{ fontSize: 12, color: '#9ca3af', marginBottom: 16, display: 'block' }}>分享你的科研成果，展示学术风采</Text>
+
+        <View className="card" style={{ borderRadius: 14, padding: 20 }}>
+          {error && <View style={{ background: '#fef2f2', color: '#dc2626', padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 14, border: '1px solid #fecaca' }}>{error}</View>}
+
+          <View className="input-group">
+            <Text className="input-label">标题 <Text className="required">*</Text></Text>
+            <Input value={f.title} onInput={e => h('title', e.detail.value)} placeholder="输入项目标题" className="input" />
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">领域 <Text className="required">*</Text></Text>
+            <Picker mode="selector" range={fields} value={f.field} onChange={e => h('field', Number(e.detail.value))}>
+              <View className="picker-input">{fields[f.field]}</View>
+            </Picker>
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">姓名 <Text className="required">*</Text></Text>
+            <Input value={f.studentName} onInput={e => h('studentName', e.detail.value)} className="input" placeholder="你的姓名" />
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">学校/院系 <Text className="required">*</Text></Text>
+            <Input value={f.institution} onInput={e => h('institution', e.detail.value)} className="input" placeholder="计算机科学与技术学院" />
+          </View>
+
+          <View className="flex" style={{ gap: 10 }}>
+            <View className="input-group" style={{ flex: 1 }}>
+              <Text className="input-label">项目年份</Text>
+              <Picker mode="selector" range={years} value={f.year} onChange={e => h('year', Number(e.detail.value))}>
+                <View className="picker-input">{years[f.year]}</View>
+              </Picker>
+            </View>
+            <View className="input-group" style={{ flex: 1 }}>
+              <Text className="input-label">项目类型</Text>
+              <Picker mode="selector" range={types} value={f.type} onChange={e => h('type', Number(e.detail.value))}>
+                <View className="picker-input">{types[f.type]}</View>
+              </Picker>
+            </View>
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">摘要 <Text className="required">*</Text></Text>
+            <Textarea value={f.abstract} onInput={e => h('abstract', e.detail.value)} className="textarea" placeholder="简要描述你的项目..." style={{ minHeight: 72 }} />
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">详细介绍 <Text className="required">*</Text></Text>
+            <Textarea value={f.content} onInput={e => h('content', e.detail.value)} className="textarea" placeholder="详细描述你的项目内容、方法、成果..." style={{ minHeight: 140 }} />
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">封面图 URL</Text>
+            <Input value={f.thumbnail} onInput={e => h('thumbnail', e.detail.value)} className="input" placeholder="https://example.com/image.jpg" />
+            {f.thumbnail ? (
+              <View style={{ marginTop: 8, borderRadius: 8, overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+                <Image src={f.thumbnail} style={{ width: '100%', height: 120 }} mode="aspectFill" onError={() => Taro.showToast({ title: '图片加载失败', icon: 'none' })} />
+              </View>
+            ) : null}
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">标签（逗号分隔）</Text>
+            <Input value={f.tags} onInput={e => h('tags', e.detail.value)} className="input" placeholder="例如：机器学习, 计算机视觉, Python" />
+            {tagChips.length > 0 && (
+              <View className="flex flex-wrap" style={{ gap: 6, marginTop: 8 }}>
+                {tagChips.map(t => (
+                  <View key={t} className="tag-chip">{t}</View>
+                ))}
+              </View>
+            )}
+          </View>
+        </View>
+      </View>
+
+      {/* Sticky submit */}
+      <View className="sticky-bottom">
+        <Button className="btn btn-primary btn-block" style={{ borderRadius: 12, padding: 13, fontSize: 15, fontWeight: 600 }} loading={loading} onClick={submit}>发布项目</Button>
       </View>
     </View>
   )

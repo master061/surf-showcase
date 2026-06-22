@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkLogin = () => {
     if (!token) {
-      Taro.showModal({ title: '提示', content: '请先登录', success: (r) => { if (r.confirm) Taro.navigateTo({ url: '/pages/auth/login' }) } })
+      Taro.showModal({ title: '提示', content: '请先登录', success: (r) => { if (r.confirm) Taro.navigateTo({ url: '/pages/auth/login/index' }) } })
       return false
     }
     return true

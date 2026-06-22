@@ -86,19 +86,24 @@ export default function Projects() {
       </View>
 
       {/* Filters */}
+      <View className="section-header" style={{ marginBottom: 10 }}>
+        <Text style={{ fontSize: 12, color: '#9ca3af' }}>
+          {loading ? '加载中...' : `找到 ${list.length} 个项目`}
+        </Text>
+      </View>
       <View className="flex items-center" style={{ gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
         <Picker mode="selector" range={fields} value={fieldIdx} onChange={e => setFieldIdx(Number(e.detail.value))}>
-          <View className="badge" style={{ background: '#eff6ff', color: '#1d4ed8', padding: '6px 12px' }}>{fields[fieldIdx]}</View>
+          <View className="badge" style={{ background: '#eff6ff', color: '#1d4ed8', padding: '6px 12px' }}>{fields[fieldIdx]} ▾</View>
         </Picker>
         <Picker mode="selector" range={types} value={typeIdx} onChange={e => setTypeIdx(Number(e.detail.value))}>
-          <View className="badge" style={{ background: '#f0fdf4', color: '#15803d', padding: '6px 12px' }}>{types[typeIdx]}</View>
+          <View className="badge" style={{ background: '#f0fdf4', color: '#15803d', padding: '6px 12px' }}>{types[typeIdx]} ▾</View>
         </Picker>
         <Picker mode="selector" range={years} value={yearIdx} onChange={e => setYearIdx(Number(e.detail.value))}>
-          <View className="badge" style={{ background: '#fefce8', color: '#a16207', padding: '6px 12px' }}>{years[yearIdx]}</View>
+          <View className="badge" style={{ background: '#fefce8', color: '#a16207', padding: '6px 12px' }}>{years[yearIdx]} ▾</View>
         </Picker>
-        <View style={{ marginLeft: 'auto', display: 'flex', gap: 4, background: '#f3f4f6', borderRadius: 8, padding: 2 }}>
-          <Text className="badge" style={{ background: sort === 'newest' ? '#fff' : 'transparent', color: sort === 'newest' ? '#1e40af' : '#6b7280', padding: '4px 10px' }} onClick={() => setSort('newest')}>最新</Text>
-          <Text className="badge" style={{ background: sort === 'hot' ? '#fff' : 'transparent', color: sort === 'hot' ? '#1e40af' : '#6b7280', padding: '4px 10px' }} onClick={() => setSort('hot')}>最热</Text>
+        <View style={{ marginLeft: 'auto', display: 'flex', gap: 2, background: '#f3f4f6', borderRadius: 10, padding: 3 }}>
+          <Text style={{ background: sort === 'newest' ? '#fff' : 'transparent', color: sort === 'newest' ? '#1e40af' : '#6b7280', padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: sort === 'newest' ? 600 : 400, boxShadow: sort === 'newest' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.2s' }} onClick={() => setSort('newest')}>最新</Text>
+          <Text style={{ background: sort === 'hot' ? '#fff' : 'transparent', color: sort === 'hot' ? '#1e40af' : '#6b7280', padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: sort === 'hot' ? 600 : 400, boxShadow: sort === 'hot' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none', transition: 'all 0.2s' }} onClick={() => setSort('hot')}>最热</Text>
         </View>
       </View>
 
