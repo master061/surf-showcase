@@ -32,6 +32,11 @@ export default function Index() {
     return sum + (p._count?.votes || 0)
   }, 0)
 
+  const setProjectFilter = (filter: Record<string, string> | null) => {
+    if (filter) Taro.setStorageSync('projectFilter', filter)
+    else Taro.removeStorageSync('projectFilter')
+  }
+
   if (loading) {
     return (
       <View style={{ padding: '20px 16px' }}>
@@ -64,7 +69,13 @@ export default function Index() {
           探索优秀本科生科研成果，发现前沿研究方向
         </Text>
         <View style={{ marginTop: 22, display: 'flex', gap: 10, position: 'relative', zIndex: 1 }}>
-          <Navigator url="/pages/projects/index" className="btn" style={{ background: 'transparent', color: '#fff', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', border: '1px solid rgba(255,255,255,0.35)' }}>浏览项目</Navigator>
+          <Navigator
+            openType="switchTab"
+            url="/pages/projects/index"
+            onClick={() => setProjectFilter(null)}
+            className="btn"
+            style={{ background: 'transparent', color: '#fff', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', border: '1px solid rgba(255,255,255,0.35)' }}
+          >浏览项目</Navigator>
           {isLoggedIn ? (
             <Navigator url="/pages/create/index" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', fontWeight: 600 }}>发布项目</Navigator>
           ) : (
@@ -100,7 +111,13 @@ export default function Index() {
         <Text style={{ fontSize: 16, fontWeight: 600, color: '#111827', marginBottom: 12 }}>研究领域</Text>
         <View style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {fields.map((f, i) => (
-            <Navigator key={f} url={`/pages/projects/index?field=${f}`} style={{ width: '23%', background: fieldColors[i], borderRadius: 10, padding: '10px 4px', textAlign: 'center' }}>
+            <Navigator
+              key={f}
+              openType="switchTab"
+              url="/pages/projects/index"
+              onClick={() => setProjectFilter({ field: f })}
+              style={{ width: '23%', background: fieldColors[i], borderRadius: 10, padding: '10px 4px', textAlign: 'center' }}
+            >
               <Text style={{ fontSize: 20, display: 'block' }}>{fieldIcons[i]}</Text>
               <Text style={{ fontSize: 11, color: '#374151', marginTop: 4 }}>{f}</Text>
             </Navigator>
@@ -113,7 +130,12 @@ export default function Index() {
         <View style={{ padding: '0 16px', marginBottom: 16 }}>
           <View className="flex items-center justify-between" style={{ marginBottom: 12 }}>
             <Text style={{ fontSize: 16, fontWeight: 600, color: '#111827' }}>热门项目</Text>
-            <Navigator url="/pages/projects/index?sort=hot" style={{ fontSize: 12, color: '#1e40af' }}>查看更多</Navigator>
+            <Navigator
+              openType="switchTab"
+              url="/pages/projects/index"
+              onClick={() => setProjectFilter({ sort: 'hot' })}
+              style={{ fontSize: 12, color: '#1e40af' }}
+            >查看更多</Navigator>
           </View>
           {hotProjects.map(p => <ProjectCard key={p.id} project={p} />)}
         </View>
@@ -124,7 +146,12 @@ export default function Index() {
         <View style={{ padding: '0 16px' }}>
           <View className="flex items-center justify-between" style={{ marginBottom: 12 }}>
             <Text style={{ fontSize: 16, fontWeight: 600, color: '#111827' }}>最新发布</Text>
-            <Navigator url="/pages/projects/index" style={{ fontSize: 12, color: '#1e40af' }}>查看更多</Navigator>
+            <Navigator
+              openType="switchTab"
+              url="/pages/projects/index"
+              onClick={() => setProjectFilter(null)}
+              style={{ fontSize: 12, color: '#1e40af' }}
+            >查看更多</Navigator>
           </View>
           {latestProjects.map(p => <ProjectCard key={p.id} project={p} />)}
         </View>

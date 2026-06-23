@@ -49,6 +49,8 @@ export interface Project {
   institution: string
   year?: number | null
   type: string
+  isRecruiting: boolean
+  recruitingInfo?: string | null
   userId: string
   createdAt: string
   updatedAt: string
@@ -86,7 +88,7 @@ export const api = {
     })
   },
 
-  getProjects(params?: { page?: number; limit?: number; sort?: string; field?: string; type?: string; year?: string; tag?: string; search?: string }) {
+  getProjects(params?: { page?: number; limit?: number; sort?: string; field?: string; type?: string; year?: string; tag?: string; search?: string; recruiting?: boolean }) {
     const q = new URLSearchParams()
     if (params?.page) q.set('page', String(params.page))
     if (params?.limit) q.set('limit', String(params.limit))
@@ -96,6 +98,7 @@ export const api = {
     if (params?.year) q.set('year', params.year)
     if (params?.tag) q.set('tag', params.tag)
     if (params?.search) q.set('search', params.search)
+    if (params?.recruiting) q.set('recruiting', 'true')
     return request<{ projects: Project[]; total: number; page: number; totalPages: number }>(`/projects?${q}`)
   },
 

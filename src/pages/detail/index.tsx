@@ -124,6 +124,24 @@ export default function Detail() {
           </View>
         </View>
 
+        {/* Recruiting card */}
+        {project.isRecruiting && (
+          <View className="card" style={{ borderRadius: 14, padding: 16, marginBottom: 12, borderLeft: '3px solid #dc2626', background: 'linear-gradient(135deg,#fff,#fff5f5)' }}>
+            <View className="flex items-center" style={{ gap: 8, marginBottom: project.recruitingInfo ? 10 : 0 }}>
+              <Text style={{ fontSize: 18 }}>🔥</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 14, fontWeight: 700, color: '#dc2626', display: 'block' }}>正在招募团队成员</Text>
+                <Text style={{ fontSize: 11, color: '#9ca3af' }}>该项目正在寻找志同道合的伙伴加入</Text>
+              </View>
+            </View>
+            {project.recruitingInfo && (
+              <View style={{ borderTop: '1px solid #fecaca', paddingTop: 10 }}>
+                <Text style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{project.recruitingInfo}</Text>
+              </View>
+            )}
+          </View>
+        )}
+
         {/* Abstract */}
         <View className="card" style={{ borderRadius: 14, padding: 16, marginBottom: 12 }}>
           <Text style={{ fontSize: 14, fontWeight: 700, color: '#1e40af', marginBottom: 8, display: 'block' }}>📄 摘要</Text>

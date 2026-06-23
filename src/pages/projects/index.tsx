@@ -17,6 +17,7 @@ export default function Projects() {
   const [typeIdx, setTypeIdx] = useState(0)
   const [yearIdx, setYearIdx] = useState(0)
   const [sort, setSort] = useState('newest')
+  const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [suggestions, setSuggestions] = useState<{ titles: string[]; tags: string[]; studentNames: string[]; fields: string[] }>({ titles: [], tags: [], studentNames: [], fields: [] })
@@ -33,6 +34,7 @@ export default function Projects() {
         type: typeValues[typeIdx] || undefined,
         year: yearIdx > 0 ? years[yearIdx] : undefined,
         search: search || undefined,
+        recruiting: recruitingOnly || undefined,
       })
       setList(res.projects)
       setPage(res.page)
@@ -41,7 +43,23 @@ export default function Projects() {
     finally { setLoading(false) }
   }
 
-  useEffect(() => { fetchList(1) }, [sort, fieldIdx, typeIdx, yearIdx])
+  // Read filter passed from home page via storage
+  useEffect(() => {
+    try {
+      const filter = Taro.getStorageSync('projectFilter')
+      if (filter) {
+        if (filter.field) {
+          const idx = fields.indexOf(filter.field)
+          if (idx > 0) setFieldIdx(idx)
+        }
+        if (filter.sort) setSort(filter.sort)
+        if (filter.recruiting) setRecruitingOnly(true)
+        Taro.removeStorageSync('projectFilter')
+      }
+    } catch { /* ignore */ }
+  }, [])
+
+  useEffect(() => { fetchList(1) }, [sort, fieldIdx, typeIdx, yearIdx, recruitingOnly])
 
   const onSearch = () => { setShowSug(false); fetchList(1) }
 
@@ -92,6 +110,14 @@ export default function Projects() {
         </Text>
       </View>
       <View className="flex items-center" style={{ gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+        <View className="badge" style={{
+          background: recruitingOnly ? '#fef2f2' : '#f3f4f6',
+          color: recruitingOnly ? '#dc2626' : '#6b7280',
+          padding: '6px 12px',
+          fontWeight: recruitingOnly ? 600 : 400,
+        }} onClick={() => setRecruitingOnly(!recruitingOnly)}>
+          🔥 招募中
+        </View>
         <Picker mode="selector" range={fields} value={fieldIdx} onChange={e => setFieldIdx(Number(e.detail.value))}>
           <View className="badge" style={{ background: '#eff6ff', color: '#1d4ed8', padding: '6px 12px' }}>{fields[fieldIdx]} ▾</View>
         </Picker>

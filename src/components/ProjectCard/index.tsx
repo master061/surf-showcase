@@ -37,6 +37,9 @@ export default function ProjectCard({ project }: { project: Project }) {
             <Text className="badge" style={{ background: '#eff6ff', color: '#1d4ed8', fontSize: 10 }}>{project.field}</Text>
             {project.year && <Text className="badge badge-gray" style={{ fontSize: 10 }}>{project.year}</Text>}
             <Text className="badge" style={{ background: typeBgColors[project.type] || '#f0fdf4', color: typeColors[project.type] || '#15803d', fontSize: 10 }}>{typeLabels[project.type] || project.type}</Text>
+            {project.isRecruiting && (
+              <Text className="badge" style={{ background: '#fef2f2', color: '#dc2626', fontSize: 10, fontWeight: 600, animation: 'pulse 2s infinite' }}>🔥 招募中</Text>
+            )}
           </View>
 
           {/* Tags */}

@@ -10,12 +10,12 @@ const typeValues = ['INDIVIDUAL', 'TEAM', 'CLASS']
 
 export default function Edit() {
   const { id } = Taro.getCurrentInstance()?.router?.params as { id: string } || { id: '' }
-  const [f, setF] = useState({ title: '', abstract: '', content: '', field: 0, tags: '', thumbnail: '', studentName: '', institution: '', year: 2, type: 0 })
+  const [f, setF] = useState({ title: '', abstract: '', content: '', field: 0, tags: '', thumbnail: '', studentName: '', institution: '', year: 2, type: 0, isRecruiting: false, recruitingInfo: '' })
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [error, setError] = useState('')
 
-  const h = (k: string, v: string | number) => setF(p => ({ ...p, [k]: v }))
+  const h = (k: string, v: string | number | boolean) => setF(p => ({ ...p, [k]: v }))
 
   useEffect(() => {
     if (!id) return
@@ -27,6 +27,8 @@ export default function Edit() {
         studentName: p.studentName, institution: p.institution,
         year: Math.max(0, years.indexOf(String(p.year || ''))),
         type: Math.max(0, typeValues.indexOf(p.type)),
+        isRecruiting: p.isRecruiting || false,
+        recruitingInfo: p.recruitingInfo || '',
       })
     }).catch(() => Taro.showToast({ title: '加载失败', icon: 'none' }))
       .finally(() => setFetching(false))
@@ -43,6 +45,8 @@ export default function Edit() {
         thumbnail: f.thumbnail || undefined,
         studentName: f.studentName, institution: f.institution,
         year: years[f.year], type: typeValues[f.type],
+        isRecruiting: f.isRecruiting,
+        recruitingInfo: f.recruitingInfo || undefined,
       })
       Taro.showToast({ title: '保存成功', icon: 'success' })
       setTimeout(() => Taro.navigateBack(), 600)
@@ -97,6 +101,36 @@ export default function Edit() {
                 <View className="picker-input">{types[f.type]}</View>
               </Picker>
             </View>
+          </View>
+
+          {/* Recruiting toggle */}
+          <View style={{ background: f.isRecruiting ? '#fef2f2' : '#f9fafb', borderRadius: 10, padding: 12, marginBottom: 14, border: f.isRecruiting ? '1px solid #fecaca' : '1px solid #e5e7eb' }}>
+            <View className="flex items-center justify-between" style={{ marginBottom: f.isRecruiting ? 10 : 0 }}>
+              <View>
+                <Text style={{ fontSize: 14, fontWeight: 600, color: '#111827', display: 'block' }}>🔥 招募团队成员</Text>
+                <Text style={{ fontSize: 11, color: '#9ca3af' }}>开启后项目将展示在招募专区</Text>
+              </View>
+              <View
+                style={{
+                  width: 44, height: 24, borderRadius: 12, padding: 2,
+                  background: f.isRecruiting ? '#dc2626' : '#d1d5db',
+                  display: 'flex', alignItems: 'center',
+                  justifyContent: f.isRecruiting ? 'flex-end' : 'flex-start',
+                }}
+                onClick={() => h('isRecruiting', !f.isRecruiting)}
+              >
+                <View style={{ width: 20, height: 20, borderRadius: 10, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+              </View>
+            </View>
+            {f.isRecruiting && (
+              <Textarea
+                value={f.recruitingInfo}
+                onInput={e => h('recruitingInfo', e.detail.value)}
+                className="textarea"
+                placeholder="描述招募需求：需要什么方向的同学？几个人？有什么要求？如何联系？"
+                style={{ minHeight: 60, fontSize: 13, borderColor: '#fecaca' }}
+              />
+            )}
           </View>
 
           <View className="input-group">

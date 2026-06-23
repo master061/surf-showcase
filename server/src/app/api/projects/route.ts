@@ -12,12 +12,14 @@ export async function GET(request: NextRequest) {
   const year = searchParams.get('year')
   const tag = searchParams.get('tag')
   const search = searchParams.get('search')
+  const recruiting = searchParams.get('recruiting')
 
   const where: any = {}
 
   if (field) where.field = field
   if (type) where.type = type
   if (year) where.year = parseInt(year)
+  if (recruiting === 'true') where.isRecruiting = true
   if (search) {
     where.OR = [
       { title: { contains: search } },
@@ -57,7 +59,7 @@ export async function POST(request: NextRequest) {
   const payload = getUserFromRequest(request)
   if (!payload) return unauthorized()
 
-  const { title, abstract, content, field, tags, thumbnail, studentName, institution, year, type } = await request.json()
+  const { title, abstract, content, field, tags, thumbnail, studentName, institution, year, type, isRecruiting, recruitingInfo } = await request.json()
   if (!title || !abstract || !content || !field) {
     return NextResponse.json({ error: '标题、摘要、内容和领域为必填项' }, { status: 400 })
   }
@@ -71,6 +73,8 @@ export async function POST(request: NextRequest) {
       institution,
       year: year ? parseInt(year) : null,
       type: type || 'INDIVIDUAL',
+      isRecruiting: !!isRecruiting,
+      recruitingInfo: recruitingInfo || null,
       userId: payload.id,
     },
   })

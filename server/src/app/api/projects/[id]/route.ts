@@ -22,7 +22,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   if (!project) return NextResponse.json({ error: '项目不存在' }, { status: 404 })
   if (project.userId !== payload.id && payload.role !== 'ADMIN') return forbidden()
 
-  const { title, abstract, content, field, tags, thumbnail, year, type, studentName, institution } = await request.json()
+  const { title, abstract, content, field, tags, thumbnail, year, type, studentName, institution, isRecruiting, recruitingInfo } = await request.json()
   const updated = await prisma.project.update({
     where: { id: params.id },
     data: {
@@ -36,6 +36,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       ...(type !== undefined && { type }),
       ...(studentName !== undefined && { studentName }),
       ...(institution !== undefined && { institution }),
+      ...(isRecruiting !== undefined && { isRecruiting }),
+      ...(recruitingInfo !== undefined && { recruitingInfo }),
     },
   })
   return NextResponse.json(updated)
