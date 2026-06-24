@@ -7,12 +7,27 @@ import { useAuth } from '../../components/AuthStore'
 export default function Dashboard() {
   const { user, checkLogin, logout } = useAuth()
   const [list, setList] = useState<Project[]>([])
+  const [favList, setFavList] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const fetchData = () => {
     if (!checkLogin()) return
-    api.getProjects({ sort: 'newest' }).then(d => setList(d.projects.filter(p => p.userId === user?.id))).finally(() => setLoading(false))
-  }, [])
+    Promise.all([
+      api.getProjects({ sort: 'newest' }),
+      api.getProjects({ favorites: true as any }),
+    ]).then(([d, fav]) => {
+      setList(d.projects.filter(p => p.userId === user?.id))
+      setFavList(fav.projects)
+    }).catch(() => {}).finally(() => setLoading(false))
+  }
+
+  useEffect(() => { fetchData() }, [])
+
+  // Refresh when switching back to this tab
+  // Note: useDidShow is injected into Taro by the framework plugin
+  Taro.useDidShow(() => {
+    fetchData()
+  })
 
   if (loading) return <View style={{ padding: '20px 16px' }}>{[1, 2, 3].map(i => <View key={i} className="card skeleton" style={{ height: 100, borderRadius: 12, marginBottom: 12 }} />)}</View>
 
@@ -106,6 +121,44 @@ export default function Dashboard() {
             </View>
           </View>
         ))}
+      </View>
+
+      {/* Favorites */}
+      <View style={{ padding: '0 16px', marginTop: 4 }}>
+        <View className="section-header" style={{ marginBottom: 12 }}>
+          <Text className="section-title">⭐ 我的收藏</Text>
+          <Text style={{ fontSize: 12, color: '#9ca3af' }}>{favList.length} 个项目</Text>
+        </View>
+        {favList.length > 0 ? (
+          <View style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {favList.map(p => (
+              <Navigator key={p.id} url={`/pages/detail/index?id=${p.id}`}>
+                <View className="card card-clickable" style={{ borderRadius: 12, padding: 12, borderLeft: '3px solid #f59e0b', background: 'linear-gradient(135deg,#fff,#fffdf5)' }}>
+                  <View className="flex items-start justify-between">
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text style={{ fontSize: 13, fontWeight: 600, color: '#111827', display: 'block', marginBottom: 4, lineHeight: 1.3 }}>{p.title}</Text>
+                      <View className="flex flex-wrap items-center" style={{ gap: 6 }}>
+                        <Text className="badge badge-blue" style={{ fontSize: 10 }}>{p.field}</Text>
+                        <Text style={{ fontSize: 11, color: '#9ca3af' }}>{p.studentName} · {p.institution}</Text>
+                        <View className="flex items-center" style={{ gap: 2 }}>
+                          <Text style={{ fontSize: 11, color: '#f59e0b' }}>★</Text>
+                          <Text style={{ fontSize: 11, color: '#6b7280' }}>{p._count.votes}</Text>
+                        </View>
+                      </View>
+                    </View>
+                    <Text style={{ fontSize: 18, flexShrink: 0, marginLeft: 10 }}>⭐</Text>
+                  </View>
+                </View>
+              </Navigator>
+            ))}
+          </View>
+        ) : (
+          <View className="card" style={{ borderRadius: 12, padding: 24, textAlign: 'center' }}>
+            <Text style={{ fontSize: 28, display: 'block', marginBottom: 8 }}>⭐</Text>
+            <Text style={{ fontSize: 13, color: '#9ca3af', display: 'block', marginBottom: 12 }}>还没有收藏任何项目</Text>
+            <Navigator openType="switchTab" url="/pages/projects/index" className="btn btn-outline btn-sm" style={{ borderRadius: 8 }}>去发现好项目</Navigator>
+          </View>
+        )}
       </View>
 
       {/* Logout */}

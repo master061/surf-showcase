@@ -22,10 +22,12 @@ export default function Projects() {
   const [totalPages, setTotalPages] = useState(1)
   const [suggestions, setSuggestions] = useState<{ titles: string[]; tags: string[]; studentNames: string[]; fields: string[] }>({ titles: [], tags: [], studentNames: [], fields: [] })
   const [showSug, setShowSug] = useState(false)
+  const [hasSearched, setHasSearched] = useState(false)
   let sugTimer: any
 
-  const fetchList = async (p = 1) => {
+  const fetchList = async (p = 1, searchOverride?: string) => {
     setLoading(true)
+    const kw = searchOverride !== undefined ? searchOverride : search
     try {
       const res = await api.getProjects({
         page: p,
@@ -33,7 +35,7 @@ export default function Projects() {
         field: fieldIdx > 0 ? fields[fieldIdx] : undefined,
         type: typeValues[typeIdx] || undefined,
         year: yearIdx > 0 ? years[yearIdx] : undefined,
-        search: search || undefined,
+        search: kw || undefined,
         recruiting: recruitingOnly || undefined,
       })
       setList(res.projects)
@@ -61,10 +63,26 @@ export default function Projects() {
 
   useEffect(() => { fetchList(1) }, [sort, fieldIdx, typeIdx, yearIdx, recruitingOnly])
 
-  const onSearch = () => { setShowSug(false); fetchList(1) }
+  const onSearch = () => { setShowSug(false); setHasSearched(true); fetchList(1) }
+
+  const onClearSearch = () => {
+    setSearch('')
+    setShowSug(false)
+    setHasSearched(false)
+    setSuggestions({ titles: [], tags: [], studentNames: [], fields: [] })
+    fetchList(1, '')
+  }
+
+  const onPickSuggestion = (text: string) => {
+    setSearch(text)
+    setShowSug(false)
+    setHasSearched(true)
+    fetchList(1, text)
+  }
 
   const onSearchInput = (v: string) => {
     setSearch(v)
+    setHasSearched(false)
     if (v.length >= 1) {
       clearTimeout(sugTimer)
       sugTimer = setTimeout(async () => {
@@ -77,24 +95,54 @@ export default function Projects() {
     <View style={{ padding: '12px 16px' }}>
       {/* Search */}
       <View style={{ position: 'relative', marginBottom: 12 }}>
-        <Input value={search} onInput={e => onSearchInput(e.detail.value)} onConfirm={onSearch} placeholder="搜索项目、技能、研究方向..." className="input" style={{ paddingLeft: 36, borderRadius: 10, background: '#fff' }} />
-        <Text style={{ position: 'absolute', left: 12, top: 10, fontSize: 16 }} onClick={onSearch}>🔍</Text>
-        {showSug && (suggestions.titles.length > 0 || suggestions.tags.length > 0) && (
-          <View style={{ position: 'absolute', top: 44, left: 0, right: 0, background: '#fff', borderRadius: 10, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, padding: 8 }}>
+        <View style={{ position: 'relative' }}>
+          <Text style={{ position: 'absolute', left: 12, top: 10, fontSize: 15, zIndex: 1 }}>🔍</Text>
+          <Input value={search} onInput={e => onSearchInput(e.detail.value)} onConfirm={onSearch} placeholder="搜索项目、技能、研究方向..." className="input" style={{ paddingLeft: 36, paddingRight: 36, borderRadius: 10, background: '#fff' }} />
+          {search.length > 0 && (
+            <View onClick={onClearSearch} style={{ position: 'absolute', right: 10, top: 8, width: 22, height: 22, borderRadius: 11, background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+              <Text style={{ fontSize: 12, color: '#6b7280', lineHeight: 1 }}>✕</Text>
+            </View>
+          )}
+        </View>
+        {showSug && (suggestions.titles.length > 0 || suggestions.tags.length > 0 || suggestions.studentNames.length > 0 || suggestions.fields.length > 0) && (
+          <View style={{ position: 'absolute', top: 44, left: 0, right: 0, background: '#fff', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.1)', zIndex: 10, padding: '8px 0', maxHeight: 320, overflowY: 'scroll' }}>
             {suggestions.titles.length > 0 && (
-              <View style={{ marginBottom: 6 }}>
-                <Text style={{ fontSize: 11, color: '#9ca3af', padding: '4px 8px' }}>项目标题</Text>
+              <View style={{ paddingLeft: 8, paddingRight: 8 }}>
+                <Text style={{ fontSize: 10, color: '#9ca3af', padding: '6px 12px 4px', fontWeight: 600, letterSpacing: 0.5 }}>📄 项目标题</Text>
                 {suggestions.titles.map(t => (
-                  <Text key={t} style={{ fontSize: 13, padding: '6px 8px', color: '#374151' }} onClick={() => { setSearch(t); setShowSug(false); fetchList(1) }}>{t}</Text>
+                  <Text key={t} onClick={() => onPickSuggestion(t)} style={{ fontSize: 13, padding: '8px 12px', color: '#1f2937', display: 'block', borderRadius: 6, marginBottom: 1 }}>{t}</Text>
                 ))}
               </View>
             )}
             {suggestions.tags.length > 0 && (
-              <View>
-                <Text style={{ fontSize: 11, color: '#9ca3af', padding: '4px 8px' }}>标签</Text>
-                <View className="flex flex-wrap gap-1" style={{ padding: '4px 8px' }}>
+              <View style={{ paddingLeft: 8, paddingRight: 8, paddingTop: suggestions.titles.length > 0 ? 8 : 0, borderTopWidth: suggestions.titles.length > 0 ? 1 : 0, borderTopColor: '#f3f4f6' }}>
+                <Text style={{ fontSize: 10, color: '#9ca3af', padding: '6px 12px 4px', fontWeight: 600, letterSpacing: 0.5 }}>🏷️ 相关标签</Text>
+                <View className="flex flex-wrap" style={{ gap: 6, padding: '4px 12px' }}>
                   {suggestions.tags.map(t => (
-                    <Text key={t} className="badge badge-blue" onClick={() => { setSearch(t); setShowSug(false); fetchList(1) }}>{t}</Text>
+                    <Text key={t} className="tag-chip" onClick={() => onPickSuggestion(t)} style={{ fontSize: 11, cursor: 'pointer' }}>{t}</Text>
+                  ))}
+                </View>
+              </View>
+            )}
+            {suggestions.studentNames.length > 0 && (
+              <View style={{ paddingLeft: 8, paddingRight: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#f3f4f6' }}>
+                <Text style={{ fontSize: 10, color: '#9ca3af', padding: '6px 12px 4px', fontWeight: 600, letterSpacing: 0.5 }}>👤 学生姓名</Text>
+                {suggestions.studentNames.map(s => (
+                  <View key={s} onClick={() => onPickSuggestion(s)} className="flex items-center" style={{ padding: '8px 12px', gap: 8, borderRadius: 6 }}>
+                    <View style={{ width: 22, height: 22, borderRadius: 11, background: 'linear-gradient(135deg,#1e40af,#3730a3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Text style={{ color: '#fff', fontSize: 10, fontWeight: 600 }}>{s[0]}</Text>
+                    </View>
+                    <Text style={{ fontSize: 13, color: '#1f2937' }}>{s}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+            {suggestions.fields.length > 0 && (
+              <View style={{ paddingLeft: 8, paddingRight: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#f3f4f6' }}>
+                <Text style={{ fontSize: 10, color: '#9ca3af', padding: '6px 12px 4px', fontWeight: 600, letterSpacing: 0.5 }}>🔬 研究领域</Text>
+                <View className="flex flex-wrap" style={{ gap: 6, padding: '4px 12px' }}>
+                  {suggestions.fields.map(f => (
+                    <Text key={f} className="badge badge-blue" onClick={() => onPickSuggestion(f)} style={{ fontSize: 11 }}>{f}</Text>
                   ))}
                 </View>
               </View>
@@ -137,7 +185,20 @@ export default function Projects() {
       {loading ? (
         <View>{[1, 2, 3].map(i => <View key={i} className="card skeleton" style={{ height: 100, borderRadius: 12, marginBottom: 12 }} />)}</View>
       ) : list.length === 0 ? (
-        <View className="empty-state"><Text className="empty-state-icon">📭</Text><Text className="empty-state-text">暂无项目</Text></View>
+        hasSearched ? (
+          <View className="empty-state" style={{ padding: '60px 24px' }}>
+            <View style={{ width: 80, height: 80, borderRadius: 40, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <Text style={{ fontSize: 36 }}>🔍</Text>
+            </View>
+            <Text style={{ fontSize: 15, fontWeight: 600, color: '#374151', marginBottom: 6 }}>没有找到相关项目</Text>
+            <Text style={{ fontSize: 13, color: '#9ca3af', textAlign: 'center', lineHeight: 1.6 }}>
+              试试其他关键词？如研究方向、学生姓名、或标签
+            </Text>
+            <Text className="btn btn-outline btn-sm" style={{ marginTop: 16, borderRadius: 8 }} onClick={onClearSearch}>清除搜索</Text>
+          </View>
+        ) : (
+          <View className="empty-state"><Text className="empty-state-icon">📭</Text><Text className="empty-state-text">暂无项目</Text></View>
+        )
       ) : (
         <View>{list.map(p => <ProjectCard key={p.id} project={p} />)}</View>
       )}

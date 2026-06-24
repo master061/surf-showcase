@@ -16,15 +16,28 @@ export default function Detail() {
   const [voted, setVoted] = useState(false)
   const [voteCount, setVoteCount] = useState(0)
   const [heartAnim, setHeartAnim] = useState(false)
+  const [favorited, setFavorited] = useState(false)
 
   useEffect(() => {
     if (!id) return
-    api.getProject(id).then(p => {
+    api.getProject(id).then((p: any) => {
       setProject(p)
       setVoteCount(p._count.votes)
+      setVoted(p.hasVoted || false)
+      setFavorited(p.hasFavorited || false)
     }).catch(() => Taro.showToast({ title: '加载失败', icon: 'none' }))
       .finally(() => setLoading(false))
   }, [id])
+
+  const toggleFavorite = async () => {
+    if (!checkLogin()) return
+    try {
+      const res = await api.toggleFavorite(id)
+      setFavorited(res.favorited)
+      Taro.setStorageSync('favChanged', Date.now())
+      Taro.showToast({ title: res.favorited ? '已收藏' : '已取消收藏', icon: 'success' })
+    } catch { Taro.showToast({ title: '操作失败', icon: 'none' }) }
+  }
 
   const toggleVote = async () => {
     if (!checkLogin()) return
@@ -102,6 +115,25 @@ export default function Detail() {
               </Text>
               <Text style={{ fontSize: 12, color: '#9ca3af' }}>
                 {voted ? '感谢你的支持！' : `${voteCount} 人已点赞`}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Star / Favorite */}
+        <View
+          className="card card-clickable"
+          style={{ borderRadius: 14, padding: 0, marginBottom: 12, overflow: 'hidden', border: favorited ? '2px solid #fde68a' : '2px solid transparent' }}
+          onClick={toggleFavorite}
+        >
+          <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 16px', background: favorited ? '#fffbeb' : '#fafafa', gap: 8 }}>
+            <Text style={{ fontSize: 22 }}>{favorited ? '⭐' : '☆'}</Text>
+            <View>
+              <Text style={{ fontSize: 14, fontWeight: 700, color: favorited ? '#d97706' : '#374151', display: 'block' }}>
+                {favorited ? '已收藏' : '收藏项目'}
+              </Text>
+              <Text style={{ fontSize: 11, color: '#9ca3af' }}>
+                {favorited ? '在个人中心查看收藏' : '收藏后随时查看'}
               </Text>
             </View>
           </View>

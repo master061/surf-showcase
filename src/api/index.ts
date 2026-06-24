@@ -88,7 +88,7 @@ export const api = {
     })
   },
 
-  getProjects(params?: { page?: number; limit?: number; sort?: string; field?: string; type?: string; year?: string; tag?: string; search?: string; recruiting?: boolean }) {
+  getProjects(params?: { page?: number; limit?: number; sort?: string; field?: string; type?: string; year?: string; tag?: string; search?: string; recruiting?: boolean; favorites?: any }) {
     const q = new URLSearchParams()
     if (params?.page) q.set('page', String(params.page))
     if (params?.limit) q.set('limit', String(params.limit))
@@ -99,6 +99,7 @@ export const api = {
     if (params?.tag) q.set('tag', params.tag)
     if (params?.search) q.set('search', params.search)
     if (params?.recruiting) q.set('recruiting', 'true')
+    if (params?.favorites) q.set('favorites', 'true')
     return request<{ projects: Project[]; total: number; page: number; totalPages: number }>(`/projects?${q}`)
   },
 
@@ -129,6 +130,17 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ projectId }),
     })
+  },
+
+  toggleFavorite(projectId: string) {
+    return request<{ favorited: boolean }>('/projects/favorite', {
+      method: 'POST',
+      body: JSON.stringify({ projectId }),
+    })
+  },
+
+  getFavorites() {
+    return this.getProjects({ favorites: true as any })
   },
 
   getSuggestions(q: string) {

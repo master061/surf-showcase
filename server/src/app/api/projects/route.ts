@@ -13,8 +13,23 @@ export async function GET(request: NextRequest) {
   const tag = searchParams.get('tag')
   const search = searchParams.get('search')
   const recruiting = searchParams.get('recruiting')
+  const favorites = searchParams.get('favorites')
 
   const where: any = {}
+
+  // Favorites filter: only show projects favorited by current user
+  if (favorites === 'true') {
+    const payload = getUserFromRequest(request)
+    if (!payload) return unauthorized()
+    const favRecords = await prisma.favorite.findMany({
+      where: { userId: payload.id },
+      select: { projectId: true },
+    })
+    where.id = { in: favRecords.map(f => f.projectId) }
+    if (favRecords.length === 0) {
+      return NextResponse.json({ projects: [], total: 0, page: 1, totalPages: 0 })
+    }
+  }
 
   if (field) where.field = field
   if (type) where.type = type

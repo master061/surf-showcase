@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getUserFromRequest, unauthorized, forbidden } from '@/lib/auth'
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const project = await prisma.project.findUnique({
     where: { id: params.id },
     include: {
@@ -11,7 +11,21 @@ export async function GET(_request: Request, { params }: { params: { id: string 
     },
   })
   if (!project) return NextResponse.json({ error: '项目不存在' }, { status: 404 })
-  return NextResponse.json(project)
+
+  // Check if current user has voted or favorited
+  const payload = getUserFromRequest(request)
+  let hasVoted = false
+  let hasFavorited = false
+  if (payload) {
+    const [vote, fav] = await Promise.all([
+      prisma.vote.findUnique({ where: { userId_projectId: { userId: payload.id, projectId: params.id } } }),
+      prisma.favorite.findUnique({ where: { userId_projectId: { userId: payload.id, projectId: params.id } } }),
+    ])
+    hasVoted = !!vote
+    hasFavorited = !!fav
+  }
+
+  return NextResponse.json({ ...project, hasVoted, hasFavorited })
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
