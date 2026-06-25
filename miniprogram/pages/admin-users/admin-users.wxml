@@ -1,2 +1,26 @@
-<!--pages/admin-users/admin-users.wxml-->
-<text>pages/admin-users/admin-users.wxml</text>
+<view class="users-wrap">
+  <view class="setup-card" wx:if="{{!hasAdmin && !loading}}">
+    <text class="setup-icon">🛡️</text>
+    <text class="setup-title">成为管理员</text>
+    <text class="setup-desc">当前还没有管理员，点击下方按钮将你的账号设为平台管理员</text>
+    <button class="btn btn-primary" style="width:100%;padding:14px 0;border-radius:14px;font-size:16px;font-weight:700" bindtap="setupAdmin">成为管理员</button>
+  </view>
+
+  <view wx:if="{{hasAdmin && isAdmin}}">
+    <view class="admin-header"><text class="admin-title">👥 用户管理</text><text class="admin-count">共 {{users.length}} 人</text></view>
+    <view wx:if="{{loading}}"><view class="skeleton" style="height:60px;margin-bottom:10px" wx:for="{{[1,2,3]}}" wx:key="*this"></view></view>
+    <view class="user-item" wx:for="{{users}}" wx:key="_id" wx:if="{{!loading}}">
+      <view class="user-avatar">{{item.name?item.name[0]:'?'}}</view>
+      <view class="user-info">
+        <text class="user-name">{{item.name}} <text class="user-role {{item.role==='ADMIN'?'role-admin':'role-user'}}">{{item.role==='ADMIN'?'管理员':'普通用户'}}</text></text>
+        <text class="user-email">{{item.email}}</text>
+      </view>
+      <view class="user-action {{item.role==='ADMIN'?'action-admin':''}}" bindtap="setRole" data-user-id="{{item._id}}" data-role="{{item.role}}">{{item.role==='ADMIN'?'取消管理':'设为管理员'}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{hasAdmin && !isAdmin}}" class="empty-state">
+    <text class="empty-state-icon">🛡️</text>
+    <text class="empty-state-text">只有管理员才能查看此页面</text>
+  </view>
+</view>

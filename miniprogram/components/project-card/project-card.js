@@ -1,4 +1,4 @@
-const typeLabels = { INDIVIDUAL: '个人项目', TEAM: '团队项目', CLASS: '班级项目' }
+const typeLabels = { INDIVIDUAL: '个人项目', TEAM: '团队项目' }
 
 Component({
   properties: {

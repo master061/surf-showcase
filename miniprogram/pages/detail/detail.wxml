@@ -19,13 +19,9 @@
         <view class="recruit-cell" wx:if="{{project.recruitCount}}"><text class="rc-num">{{project.recruitCount}}</text><text class="rc-lbl">招募人数</text></view>
         <view class="recruit-cell" wx:if="{{project.expectedDuration}}"><text class="rc-dur">{{project.expectedDuration}}</text><text class="rc-lbl">预期周期</text></view>
       </view>
-      <view class="detail-section"><text class="ds-title">📝 摘要</text><text class="ds-body">{{project.abstract}}</text></view>
-      <view class="detail-section" wx:if="{{project.methodology}}"><text class="ds-title">🔬 方法论</text><text class="ds-body">{{project.methodology}}</text></view>
-      <view class="detail-section" wx:if="{{project.researchMethods}}"><text class="ds-title">📊 研究方法</text><text class="ds-body">{{project.researchMethods}}</text></view>
-      <view class="detail-section" wx:if="{{project.processResults}}"><text class="ds-title">📈 过程与结果</text><text class="ds-body">{{project.processResults}}</text></view>
-      <view class="detail-section" wx:if="{{project.conclusion}}"><text class="ds-title">🎯 结论</text><text class="ds-body">{{project.conclusion}}</text></view>
-      <view class="detail-section" wx:if="{{project.acknowledgments}}"><text class="ds-title">🙏 致谢</text><text class="ds-body">{{project.acknowledgments}}</text></view>
-      <view class="detail-section" wx:if="{{project.references}}"><text class="ds-title">📚 参考文献</text><text class="ds-body">{{project.references}}</text></view>
+      <view class="detail-section"><text class="ds-title">📝 项目简介</text><text class="ds-body">{{project.abstract}}</text></view>
+      <view class="detail-section" wx:if="{{project.content}}"><text class="ds-title">📈 研究成果</text><text class="ds-body">{{project.content}}</text></view>
+      <view class="detail-section" wx:if="{{project.advisor}}"><text class="ds-title">👨‍🏫 指导老师</text><text class="ds-body">{{project.advisor}}</text></view>
       <view class="detail-section" wx:if="{{project.status==='RECRUITING' && project.recruitRequirements}}">
         <text class="ds-title">🎯 招募要求</text><text class="ds-body">{{project.recruitRequirements}}</text>
         <view class="contact-box" wx:if="{{project.contactInfo}}">📧 {{project.contactInfo}}</view>

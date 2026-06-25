@@ -1,66 +1,44 @@
-// pages/admin-users/admin-users.js
+const { callFunction } = require('../../utils/api')
+const app = getApp()
 Page({
-
-  /**
-   * 页面的初始数据
-   */
-  data: {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
+  data: { users: [], loading: true, hasAdmin: false, isAdmin: false },
   onShow() {
-
+    const user = app.globalData.user
+    this.setData({ isAdmin: user?.role === 'ADMIN' })
+    this.loadUsers()
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
+  loadUsers() {
+    this.setData({ loading: true })
+    Promise.all([
+      callFunction('getAllUsers').catch(() => ({ users: [] })),
+    ]).then(([res]) => {
+      const users = res.users || []
+      const hasAdmin = users.some(u => u.role === 'ADMIN')
+      this.setData({ users, hasAdmin, loading: false })
+    }).catch(() => this.setData({ loading: false }))
   },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
+  setupAdmin() {
+    wx.showLoading({ title: '设置中...' })
+    callFunction('setupAdmin').then(res => {
+      wx.hideLoading()
+      if (res.success) {
+        wx.showToast({ title: '已成为管理员', icon: 'success' })
+        const user = app.globalData.user
+        if (user) { user.role = 'ADMIN'; app.globalData.user = user; wx.setStorageSync('user', JSON.stringify(user)) }
+        this.setData({ isAdmin: true, hasAdmin: true })
+        this.loadUsers()
+      }
+    }).catch(e => {
+      wx.hideLoading()
+      wx.showToast({ title: e?.data?.error || '设置失败', icon: 'none' })
+    })
   },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
+  setRole(e) {
+    const { userId, role } = e.currentTarget.dataset
+    const newRole = role === 'ADMIN' ? 'STUDENT' : 'ADMIN'
+    callFunction('setUserRole', { userId, role: newRole }).then(() => {
+      wx.showToast({ title: '已更新', icon: 'success' })
+      this.loadUsers()
+    }).catch(() => wx.showToast({ title: '操作失败', icon: 'none' }))
   },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
 })

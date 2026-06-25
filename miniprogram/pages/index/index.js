@@ -27,9 +27,13 @@ Page({
   goCreate(){wx.navigateTo({url:'/pages/create/create'})},
   goProjects(e){
     const field = e.currentTarget.dataset.field
-    if (field) {
-      app.globalData.pendingField = field
-    }
+    if (field) app.globalData.pendingField = field
+    wx.switchTab({url:'/pages/projects/projects'})
+  },
+  goProjectsWith(e){
+    const ds = e.currentTarget.dataset
+    if (ds.status) app.globalData.pendingStatus = ds.status
+    if (ds.sort) app.globalData.pendingSort = ds.sort
     wx.switchTab({url:'/pages/projects/projects'})
   },
 })

@@ -11,7 +11,7 @@
   </scroll-view>
   <scroll-view class="filter-scroll" scroll-x>
     <view class="filter-chips">
-      <text class="chip {{fieldIdx===0?'chip-active':''}}" wx:for="{{fields}}" wx:for-index="i" wx:key="*this" bindtap="onFieldChange" data-field="{{i}}">{{item}}</text>
+      <text class="chip {{fieldIdx===i?'chip-active':''}}" wx:for="{{fields}}" wx:for-index="i" wx:key="*this" bindtap="onFieldTap" data-idx="{{i}}">{{item}}</text>
     </view>
   </scroll-view>
   <view class="filter-row">

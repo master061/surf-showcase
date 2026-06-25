@@ -5,10 +5,32 @@ Page({
     statuses:[{label:'全部',value:''},{label:'✅ 已完成',value:'COMPLETED'},{label:'🔍 招人中',value:'RECRUITING'}],
     suggestions:{titles:[],tags:[],studentNames:[],fields:[]}, showSug:false, sugTimer:null },
   onLoad(params){
+    const app = getApp()
+    if (app.globalData.pendingStatus) { this.setData({ statusVal: app.globalData.pendingStatus }); app.globalData.pendingStatus = '' }
+    if (app.globalData.pendingSort) { this.setData({ sort: app.globalData.pendingSort }); app.globalData.pendingSort = '' }
+    if (app.globalData.pendingField) { this.setData({ search: app.globalData.pendingField }); app.globalData.pendingField = '' }
     if(params.status) this.setData({statusVal:params.status})
     if(params.sort) this.setData({sort:params.sort})
     if(params.field) this.setData({search:params.field})
     this.fetchList(1)
+  },
+  onShow(){
+    const app = getApp()
+    if (app.globalData.pendingField) {
+      this.setData({ search: app.globalData.pendingField, fieldIdx: 0, typeIdx: 0, yearIdx: 0, statusVal: '' })
+      app.globalData.pendingField = ''
+      this.fetchList(1)
+    }
+    if (app.globalData.pendingStatus) {
+      this.setData({ statusVal: app.globalData.pendingStatus, search: '', fieldIdx: 0, typeIdx: 0, yearIdx: 0 })
+      app.globalData.pendingStatus = ''
+      this.fetchList(1)
+    }
+    if (app.globalData.pendingSort) {
+      this.setData({ sort: app.globalData.pendingSort, search: '', fieldIdx: 0, typeIdx: 0, yearIdx: 0, statusVal: '' })
+      app.globalData.pendingSort = ''
+      this.fetchList(1)
+    }
   },
   fetchList(p){
     this.setData({loading:true,page:p||1})
@@ -34,6 +56,10 @@ Page({
   onSearchConfirm(){this.setData({showSug:false});this.fetchList(1)},
   onSugClick(e){this.setData({search:e.currentTarget.dataset.value,showSug:false});this.fetchList(1)},
   onStatusTap(e){this.setData({statusVal:e.currentTarget.dataset.value});this.fetchList(1)},
+  onFieldTap(e){
+    const idx = Number(e.currentTarget.dataset.idx)
+    this.setData({fieldIdx:idx,search:''});this.fetchList(1)
+  },
   onFieldChange(e){this.setData({fieldIdx:Number(e.detail.value)});this.fetchList(1)},
   onTypeChange(e){this.setData({typeIdx:Number(e.detail.value)});this.fetchList(1)},
   onYearChange(e){this.setData({yearIdx:Number(e.detail.value)});this.fetchList(1)},

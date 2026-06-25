@@ -19,7 +19,7 @@ function callFunction(action, data = {}) {
   })
 }
 
-const typeLabels = { INDIVIDUAL: '个人项目', TEAM: '团队项目', CLASS: '班级项目' }
+const typeLabels = { INDIVIDUAL: '个人项目', TEAM: '团队项目' }
 const statusStyles = {
   COMPLETED: { label: '✅ 已完成', cls: 'badge badge-done' },
   RECRUITING: { label: '🔍 招人中', cls: 'badge badge-recruit' },
@@ -37,8 +37,8 @@ function parseTags(str) {
 
 const fields = ['计算机科学', '人工智能', '生物医药', '物理数学', '化学材料', '工程技术', '社会科学', '人文艺术']
 const years = ['2023', '2024', '2025', '2026']
-const types = ['个人项目', '团队项目', '班级项目']
-const typeValues = ['INDIVIDUAL', 'TEAM', 'CLASS']
+const types = ['个人项目', '团队项目']
+const typeValues = ['INDIVIDUAL', 'TEAM']
 const yearOpts = ['2022', '2023', '2024', '2025', '2026', '2027']
 const durationOpts = ['3个月', '6个月', '1年', '1年以上']
 const recruitCountOpts = ['1人', '2人', '3人', '4人', '5人', '5人以上']

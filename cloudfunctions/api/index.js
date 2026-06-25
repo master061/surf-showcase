@@ -314,6 +314,17 @@ async function setUserRole(openid, token, userId, role) {
   return { success: true }
 }
 
+// 首次管理员设置：将当前登录用户设为管理员（仅首次使用）
+async function setupAdmin(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user) return { code: 401, error: '请先登录' }
+  // 检查是否已有管理员
+  const admins = await db.collection(USERS).where({ role: 'ADMIN' }).get()
+  if (admins.data.length > 0) return { code: 403, error: '已有管理员' }
+  await db.collection(USERS).doc(user._id).update({ data: { role: 'ADMIN' } })
+  return { success: true }
+}
+
 // ============== Router ==============
 exports.main = async (event, context) => {
   const { action, ...params } = event
@@ -338,6 +349,7 @@ exports.main = async (event, context) => {
     getPendingProjects: () => getPendingProjects(),
     getAllUsers: () => getAllUsers(openid, params.token),
     setUserRole: () => setUserRole(openid, params.token, params.userId, params.role),
+    setupAdmin: () => setupAdmin(openid, params.token),
   }
 
   const h = handlers[action]

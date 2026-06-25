@@ -20,7 +20,7 @@
 
   <!-- Recruiting -->
   <view class="section" wx:if="{{recruitProjects.length>0}}">
-    <view class="sec-header"><text class="sec-title">🔍 正在招人</text><navigator url="/pages/projects/projects?status=RECRUITING" class="sec-more">查看全部 →</navigator></view>
+    <view class="sec-header"><text class="sec-title">🔍 正在招人</text><text class="sec-more" bindtap="goProjectsWith" data-status="RECRUITING">查看全部 →</text></view>
     <view class="recruit-card" wx:for="{{recruitProjects}}" wx:key="_id">
       <project-card project="{{item}}"/>
     </view>
@@ -39,7 +39,7 @@
 
   <!-- Hot -->
   <view class="section" wx:if="{{!loading}}">
-    <view class="sec-header"><text class="sec-title">🔥 热门推荐</text><navigator url="/pages/projects/projects?sort=hot" class="sec-more">更多 →</navigator></view>
+    <view class="sec-header"><text class="sec-title">🔥 热门推荐</text><text class="sec-more" bindtap="goProjectsWith" data-sort="hot">更多 →</text></view>
     <block wx:if="{{hotProjects.length>0}}">
       <project-card wx:for="{{hotProjects}}" wx:key="_id" project="{{item}}"/>
     </block>
@@ -50,7 +50,7 @@
 
   <!-- Latest -->
   <view class="section" wx:if="{{!loading}}">
-    <view class="sec-header"><text class="sec-title">✨ 最新发布</text><navigator url="/pages/projects/projects" class="sec-more">更多 →</navigator></view>
+    <view class="sec-header"><text class="sec-title">✨ 最新发布</text><text class="sec-more" bindtap="goProjectsWith">更多 →</text></view>
     <project-card wx:for="{{latestProjects}}" wx:key="_id" project="{{item}}"/>
   </view>
 
