@@ -1,0 +1,45 @@
+export default defineAppConfig({
+  pages: [
+    'pages/index/index',
+    'pages/projects/index',
+    'pages/detail/index',
+    'pages/create/index',
+    'pages/edit/index',
+    'pages/dashboard/index',
+    'pages/auth/login/index',
+    'pages/auth/register/index',
+    'pages/profile/index',
+  ],
+  window: {
+    navigationBarTitleText: 'SURF Showcase',
+    navigationBarBackgroundColor: '#1e40af',
+    navigationBarTextStyle: 'white',
+    backgroundColor: '#f3f4f6',
+  },
+  tabBar: {
+    color: '#9ca3af',
+    selectedColor: '#1e40af',
+    backgroundColor: '#ffffff',
+    borderStyle: 'black',
+    list: [
+      {
+        pagePath: 'pages/index/index',
+        text: '首页',
+        iconPath: 'assets/home.png',
+        selectedIconPath: 'assets/home-active.png',
+      },
+      {
+        pagePath: 'pages/projects/index',
+        text: '项目',
+        iconPath: 'assets/projects.png',
+        selectedIconPath: 'assets/projects-active.png',
+      },
+      {
+        pagePath: 'pages/dashboard/index',
+        text: '我的',
+        iconPath: 'assets/mine.png',
+        selectedIconPath: 'assets/mine-active.png',
+      },
+    ],
+  },
+})

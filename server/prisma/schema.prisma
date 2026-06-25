@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id @default(cuid())
+  name        String
+  email       String     @unique
+  password    String
+  role        String     @default("STUDENT")
+  studentId   String?
+  institution String?
+  year        Int?
+  bio         String?
+  avatar      String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  projects    Project[]
+  votes       Vote[]
+  favorites   Favorite[]
+}
+
+model Project {
+  id             String     @id @default(cuid())
+  title          String
+  abstract       String
+  content        String
+  field          String
+  tags           String     @default("")
+  thumbnail      String?
+  studentName    String
+  institution    String
+  year           Int?
+  type           String     @default("INDIVIDUAL")
+  isRecruiting   Boolean    @default(false)
+  recruitingInfo String?
+  userId         String
+  user           User       @relation(fields: [userId], references: [id])
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  votes          Vote[]
+  favorites      Favorite[]
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  user      User     @relation(fields: [userId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, projectId])
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  user      User     @relation(fields: [userId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, projectId])
+}
