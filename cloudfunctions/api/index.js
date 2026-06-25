@@ -117,13 +117,15 @@ async function updateProfile(openid, token, data) {
 }
 
 async function getProjects(params) {
-  const { page = 1, limit = 20, sort = 'newest', field, type, year, tag, search, status } = params
+  const { page = 1, limit = 20, sort = 'newest', field, type, year, tag, search, status, publishStatus } = params
   const p = parseInt(page), l = parseInt(limit)
   const cond = []
   if (field) cond.push({ field })
   if (type) cond.push({ type })
   if (year) cond.push({ year: parseInt(year) })
   if (status) cond.push({ status })
+  if (publishStatus) cond.push({ publishStatus })
+  if (!publishStatus) cond.push(_.or([{ publishStatus: 'APPROVED' }, { publishStatus: _.exists(false) }]))
   if (tag) cond.push({ tags: db.RegExp({ regexp: tag, options: 'i' }) })
   if (search) {
     const re = db.RegExp({ regexp: search, options: 'i' })
@@ -151,17 +153,30 @@ async function getProject(id) {
 async function createProject(openid, token, data) {
   const user = await resolveUser(openid, token)
   if (!user) return { code: 401, error: '请先登录' }
-  const { title, abstract, content, field, tags, thumbnail, studentName, institution, year, type, status, members, advisor, resultLinks, recruitCount, contactInfo, expectedDuration, recruitRequirements } = data
-  if (!title || !abstract || !content || !field) return { code: 400, error: '标题、摘要、内容和领域为必填项' }
+  const {
+    title, abstract, content, field, tags, thumbnail, studentName, institution,
+    year, type, status, members, advisor, resultLinks,
+    recruitCount, contactInfo, expectedDuration, recruitRequirements,
+    methodology, researchMethods, processResults, conclusion,
+    acknowledgments, references, projectUrl, socialLinks, contentImages,
+  } = data
+  if (!title || !abstract || !field) return { code: 400, error: '标题、摘要和领域为必填项' }
   const r = await db.collection(PROJECTS).add({
     data: {
-      title, abstract, content, field, tags: tags || '', thumbnail: thumbnail || null,
+      title, abstract, content: content || '', field, tags: tags || '', thumbnail: thumbnail || null,
       studentName: studentName || user.name, institution: institution || user.institution,
       year: year ? parseInt(year) : null, type: type || 'INDIVIDUAL', status: status || 'COMPLETED',
-      voteCount: 0, userId: user._id, members: members || null, advisor: advisor || null,
-      resultLinks: resultLinks || null, recruitCount: recruitCount ? parseInt(recruitCount) : null,
+      publishStatus: 'DRAFT', version: 1, voteCount: 0, userId: user._id,
+      members: members || null, advisor: advisor || null, resultLinks: resultLinks || null,
+      recruitCount: recruitCount ? parseInt(recruitCount) : null,
       contactInfo: contactInfo || null, expectedDuration: expectedDuration || null,
-      recruitRequirements: recruitRequirements || null, createdAt: now(), updatedAt: now(),
+      recruitRequirements: recruitRequirements || null,
+      methodology: methodology || null, researchMethods: researchMethods || null,
+      processResults: processResults || null, conclusion: conclusion || null,
+      acknowledgments: acknowledgments || null, references: references || null,
+      projectUrl: projectUrl || null, socialLinks: socialLinks || null,
+      contentImages: contentImages || null, rejectReason: null,
+      createdAt: now(), updatedAt: now(),
     },
   })
   return (await db.collection(PROJECTS).doc(r._id).get()).data
@@ -175,11 +190,13 @@ async function updateProject(openid, token, id, data) {
     if (!p) return { code: 404, error: '项目不存在' }
     if (p.userId !== user._id && user.role !== 'ADMIN') return { code: 403, error: '无权限' }
     const upd = {}
-    const strFields = ['title', 'abstract', 'content', 'field', 'tags', 'thumbnail', 'studentName', 'institution', 'status', 'members', 'advisor', 'resultLinks', 'contactInfo', 'expectedDuration', 'recruitRequirements']
+    const strFields = ['title', 'abstract', 'content', 'field', 'tags', 'thumbnail', 'studentName', 'institution', 'status', 'members', 'advisor', 'resultLinks', 'contactInfo', 'expectedDuration', 'recruitRequirements', 'methodology', 'researchMethods', 'processResults', 'conclusion', 'acknowledgments', 'references', 'projectUrl', 'socialLinks', 'contentImages', 'rejectReason']
     strFields.forEach(f => { if (data[f] !== undefined) upd[f] = data[f] })
     if (data.year !== undefined) upd.year = parseInt(data.year)
     if (data.type !== undefined) upd.type = data.type
     if (data.recruitCount !== undefined) upd.recruitCount = parseInt(data.recruitCount)
+    if (data.publishStatus !== undefined) upd.publishStatus = data.publishStatus
+    if (data.version !== undefined) upd.version = data.version
     upd.updatedAt = now()
     await db.collection(PROJECTS).doc(id).update({ data: upd })
     return (await db.collection(PROJECTS).doc(id).get()).data
@@ -239,6 +256,64 @@ async function toggleVote(openid, token, projectId) {
   } catch (e) { return { code: 500, error: '操作失败' } }
 }
 
+// ============== Publishing & Admin Handlers ==============
+async function submitForReview(openid, token, id) {
+  const user = await resolveUser(openid, token)
+  if (!user) return { code: 401, error: '请先登录' }
+  try {
+    const p = (await db.collection(PROJECTS).doc(id).get()).data
+    if (!p) return { code: 404, error: '项目不存在' }
+    if (p.userId !== user._id) return { code: 403, error: '无权限' }
+    await db.collection(PROJECTS).doc(id).update({ data: { publishStatus: 'PENDING', updatedAt: now() } })
+    return { success: true }
+  } catch (e) { return { code: 404, error: '项目不存在' } }
+}
+
+async function approveProject(openid, token, id) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  try {
+    const p = (await db.collection(PROJECTS).doc(id).get()).data
+    if (!p) return { code: 404, error: '项目不存在' }
+    await db.collection(PROJECTS).doc(id).update({
+      data: { publishStatus: 'APPROVED', version: (p.version || 0) + 1, rejectReason: null, updatedAt: now() },
+    })
+    return { success: true }
+  } catch (e) { return { code: 404, error: '项目不存在' } }
+}
+
+async function rejectProject(openid, token, id, reason) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  try {
+    const p = (await db.collection(PROJECTS).doc(id).get()).data
+    if (!p) return { code: 404, error: '项目不存在' }
+    await db.collection(PROJECTS).doc(id).update({
+      data: { publishStatus: 'REJECTED', rejectReason: reason || '审核未通过', updatedAt: now() },
+    })
+    return { success: true }
+  } catch (e) { return { code: 404, error: '项目不存在' } }
+}
+
+async function getPendingProjects() {
+  const res = await db.collection(PROJECTS).where({ publishStatus: 'PENDING' }).orderBy('createdAt', 'desc').get()
+  return { projects: res.data }
+}
+
+async function getAllUsers(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  const res = await db.collection(USERS).orderBy('createdAt', 'desc').get()
+  return { users: res.data.map(u => { const { password, token, ...rest } = u; return rest }) }
+}
+
+async function setUserRole(openid, token, userId, role) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  await db.collection(USERS).doc(userId).update({ data: { role } })
+  return { success: true }
+}
+
 // ============== Router ==============
 exports.main = async (event, context) => {
   const { action, ...params } = event
@@ -257,6 +332,12 @@ exports.main = async (event, context) => {
     deleteProject: () => deleteProject(openid, params.token, params.id),
     getSuggestions: () => getSuggestions(params.q),
     toggleVote: () => toggleVote(openid, params.token, params.projectId),
+    submitForReview: () => submitForReview(openid, params.token, params.id),
+    approveProject: () => approveProject(openid, params.token, params.id),
+    rejectProject: () => rejectProject(openid, params.token, params.id, params.reason),
+    getPendingProjects: () => getPendingProjects(),
+    getAllUsers: () => getAllUsers(openid, params.token),
+    setUserRole: () => setUserRole(openid, params.token, params.userId, params.role),
   }
 
   const h = handlers[action]

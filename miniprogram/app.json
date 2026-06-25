@@ -9,7 +9,9 @@
     "pages/login/login",
     "pages/register/register",
     "pages/complete-info/complete-info",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/admin-review/admin-review",
+    "pages/admin-users/admin-users"
   ],
   "window": {
     "navigationBarTitleText": "SURF 科研展示",
