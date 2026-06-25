@@ -30,9 +30,13 @@ model Project {
   title          String
   abstract       String
   content        String
+  methods        String?
+  results        String?
+  references     String?
   field          String
   tags           String     @default("")
   thumbnail      String?
+  images         String?
   studentName    String
   institution    String
   year           Int?
