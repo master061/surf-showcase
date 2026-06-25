@@ -11,11 +11,43 @@ const typeValues = ['INDIVIDUAL', 'TEAM', 'CLASS']
 
 export default function Create() {
   const { user, checkLogin } = useAuth()
-  const [f, setF] = useState({ title: '', abstract: '', content: '', field: 0, tags: '', thumbnail: '', studentName: user?.name || '', institution: user?.institution || '', year: 2, type: 0, isRecruiting: false, recruitingInfo: '' })
+  const [f, setF] = useState({ title: '', abstract: '', content: '', methods: '', results: '', references: '', field: 0, tags: '', thumbnail: '', images: '[]', studentName: user?.name || '', institution: user?.institution || '', year: 2, type: 0, isRecruiting: false, recruitingInfo: '' })
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
 
   const h = (k: string, v: string | number | boolean) => setF(p => ({ ...p, [k]: v }))
+
+  const parsedImages = (() => { try { return JSON.parse(f.images) as string[] } catch { return [] } })()
+
+  const chooseImage = () => {
+    Taro.chooseImage({
+      count: 6,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: async (res) => {
+        setUploading(true)
+        const urls: string[] = [...parsedImages]
+        for (const fp of res.tempFilePaths) {
+          try {
+            const url = await api.uploadImage(fp)
+            urls.push(`http://localhost:3000${url}`)
+          } catch { /* continue */ }
+        }
+        h('images', JSON.stringify(urls))
+        if (urls.length > 0 && !f.thumbnail) h('thumbnail', urls[0])
+        setUploading(false)
+        Taro.showToast({ title: `上传 ${urls.length - parsedImages.length} 张成功`, icon: 'success' })
+      },
+    })
+  }
+
+  const removeImage = (idx: number) => {
+    const urls = [...parsedImages]
+    urls.splice(idx, 1)
+    h('images', JSON.stringify(urls))
+    if (f.thumbnail === parsedImages[idx]) h('thumbnail', urls[0] || '')
+  }
   const submit = async () => {
     if (!checkLogin()) return
     if (!f.title || !f.abstract || !f.content) { setError('请填写必填项'); return }
@@ -24,8 +56,12 @@ export default function Create() {
     try {
       const d = await api.createProject({
         title: f.title, abstract: f.abstract, content: f.content,
+        methods: f.methods || undefined,
+        results: f.results || undefined,
+        references: f.references || undefined,
         field: fields[f.field], tags: f.tags,
         thumbnail: f.thumbnail || undefined,
+        images: parsedImages.length > 0 ? f.images : undefined,
         studentName: f.studentName, institution: f.institution,
         year: years[f.year], type: typeValues[f.type],
         isRecruiting: f.isRecruiting,
@@ -126,15 +162,63 @@ export default function Create() {
 
           <View className="input-group">
             <Text className="input-label">详细介绍 <Text className="required">*</Text></Text>
-            <Textarea value={f.content} onInput={e => h('content', e.detail.value)} className="textarea" placeholder="详细描述你的项目内容、方法、成果..." style={{ minHeight: 140 }} />
+            <Textarea value={f.content} onInput={e => h('content', e.detail.value)} className="textarea" placeholder="项目背景、研究问题、理论基础..." style={{ minHeight: 120 }} />
           </View>
 
           <View className="input-group">
-            <Text className="input-label">封面图 URL</Text>
-            <Input value={f.thumbnail} onInput={e => h('thumbnail', e.detail.value)} className="input" placeholder="https://example.com/image.jpg" />
+            <Text className="input-label">研究方法</Text>
+            <Textarea value={f.methods} onInput={e => h('methods', e.detail.value)} className="textarea" placeholder="实验设计、数据采集、分析工具、技术路线..." style={{ minHeight: 80 }} />
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">项目成果</Text>
+            <Textarea value={f.results} onInput={e => h('results', e.detail.value)} className="textarea" placeholder="研究发现、创新点、发表论文、获奖情况..." style={{ minHeight: 80 }} />
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">参考文献</Text>
+            <Textarea value={f.references} onInput={e => h('references', e.detail.value)} className="textarea" placeholder="列出引用的论文、资料、数据来源..." style={{ minHeight: 60 }} />
+          </View>
+
+          <View className="input-group">
+            <Text className="input-label">项目图片（最多 6 张）</Text>
+            {parsedImages.length > 0 && (
+              <View style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                {parsedImages.map((url, i) => (
+                  <View key={i} style={{ width: '31%', position: 'relative', borderRadius: 8, overflow: 'hidden', border: url === f.thumbnail ? '2px solid #1e40af' : '1px solid #e5e7eb' }}>
+                    <Image src={url} style={{ width: '100%', height: 80 }} mode="aspectFill" />
+                    <View onClick={() => removeImage(i)} style={{ position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: 9, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Text style={{ color: '#fff', fontSize: 10, lineHeight: 1 }}>✕</Text>
+                    </View>
+                    {url === f.thumbnail && (
+                      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: '#1e40af', padding: '2px 0' }}>
+                        <Text style={{ color: '#fff', fontSize: 9, textAlign: 'center' }}>封面</Text>
+                      </View>
+                    )}
+                  </View>
+                ))}
+                {parsedImages.length < 6 && (
+                  <View onClick={chooseImage} style={{ width: '31%', height: 80, borderRadius: 8, border: '1px dashed #d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
+                    <Text style={{ fontSize: 20, color: '#9ca3af' }}>+</Text>
+                  </View>
+                )}
+              </View>
+            )}
+            {parsedImages.length === 0 && (
+              <View
+                className="btn btn-outline"
+                style={{ borderRadius: 8, padding: '16px 12px', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}
+                onClick={chooseImage}
+              >
+                <Text style={{ fontSize: 20 }}>📷</Text>
+                <Text>{uploading ? '上传中...' : '点击上传图片'}</Text>
+              </View>
+            )}
+            <Text style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6 }}>首张图片自动设为封面。或手动输入封面 URL：</Text>
+            <Input value={f.thumbnail} onInput={e => h('thumbnail', e.detail.value)} className="input" placeholder="https://example.com/cover.jpg" />
             {f.thumbnail ? (
               <View style={{ marginTop: 8, borderRadius: 8, overflow: 'hidden', border: '1px solid #e5e7eb' }}>
-                <Image src={f.thumbnail} style={{ width: '100%', height: 120 }} mode="aspectFill" onError={() => Taro.showToast({ title: '图片加载失败', icon: 'none' })} />
+                <Image src={f.thumbnail} style={{ width: '100%', height: 140 }} mode="aspectFill" onError={() => Taro.showToast({ title: '图片加载失败', icon: 'none' })} />
               </View>
             ) : null}
           </View>

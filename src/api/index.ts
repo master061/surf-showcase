@@ -42,9 +42,13 @@ export interface Project {
   title: string
   abstract: string
   content: string
+  methods?: string | null
+  results?: string | null
+  references?: string | null
   field: string
   tags: string
   thumbnail?: string | null
+  images?: string | null
   studentName: string
   institution: string
   year?: number | null
@@ -141,6 +145,28 @@ export const api = {
 
   getFavorites() {
     return this.getProjects({ favorites: true as any })
+  },
+
+  uploadImage(filePath: string) {
+    const token = getToken()
+    return new Promise<string>((resolve, reject) => {
+      Taro.uploadFile({
+        url: `${BASE_URL.replace('/api', '')}/api/upload`,
+        filePath,
+        name: 'file',
+        header: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        success(res) {
+          try {
+            const data = JSON.parse(res.data)
+            if (data.url) resolve(data.url)
+            else reject(new Error(data.error || '上传失败'))
+          } catch { reject(new Error('上传失败')) }
+        },
+        fail() { reject(new Error('上传失败')) },
+      })
+    })
   },
 
   getSuggestions(q: string) {

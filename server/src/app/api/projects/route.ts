@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
   const payload = getUserFromRequest(request)
   if (!payload) return unauthorized()
 
-  const { title, abstract, content, field, tags, thumbnail, studentName, institution, year, type, isRecruiting, recruitingInfo } = await request.json()
+  const { title, abstract, content, methods, results, references, field, tags, thumbnail, images, studentName, institution, year, type, isRecruiting, recruitingInfo } = await request.json()
   if (!title || !abstract || !content || !field) {
     return NextResponse.json({ error: '标题、摘要、内容和领域为必填项' }, { status: 400 })
   }
@@ -82,8 +82,12 @@ export async function POST(request: NextRequest) {
   const project = await prisma.project.create({
     data: {
       title, abstract, content, field,
+      methods: methods || null,
+      results: results || null,
+      references: references || null,
       tags: tags || '',
       thumbnail: thumbnail || null,
+      images: images || null,
       studentName,
       institution,
       year: year ? parseInt(year) : null,

@@ -46,7 +46,7 @@ export default function Projects() {
   }
 
   // Read filter passed from home page via storage
-  useEffect(() => {
+  const applyStoredFilter = () => {
     try {
       const filter = Taro.getStorageSync('projectFilter')
       if (filter) {
@@ -59,7 +59,12 @@ export default function Projects() {
         Taro.removeStorageSync('projectFilter')
       }
     } catch { /* ignore */ }
-  }, [])
+  }
+
+  useEffect(() => { applyStoredFilter() }, [])
+
+  // Re-check storage filter every time the tab becomes visible
+  Taro.useDidShow(() => { applyStoredFilter() })
 
   useEffect(() => { fetchList(1) }, [sort, fieldIdx, typeIdx, yearIdx, recruitingOnly])
 
@@ -200,7 +205,7 @@ export default function Projects() {
           <View className="empty-state"><Text className="empty-state-icon">📭</Text><Text className="empty-state-text">暂无项目</Text></View>
         )
       ) : (
-        <View>{list.map(p => <ProjectCard key={p.id} project={p} />)}</View>
+        <View>{list.map((p, i) => <View key={p.id} className="card-stagger" style={{ animationDelay: `${0.05 * i}s` }}><ProjectCard project={p} /></View>)}</View>
       )}
 
       {/* Pagination */}

@@ -56,19 +56,47 @@ export default function Detail() {
   if (!project) return <View className="empty-state"><View style={{ width: 72, height: 72, borderRadius: 36, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}><Text style={{ fontSize: 32 }}>🔍</Text></View><Text className="empty-state-text">项目不存在</Text></View>
 
   const tags = project.tags ? project.tags.split(',').map(t => t.trim()).filter(Boolean) : []
+  const galleryImages = (() => { try { return JSON.parse(project.images || '[]') as string[] } catch { return [] } })()
   const isOwner = user?.id === project.userId
+
+  const previewImages = (current: string) => {
+    const all = project.thumbnail ? [project.thumbnail, ...galleryImages.filter(u => u !== project.thumbnail)] : galleryImages
+    Taro.previewImage({ current, urls: all })
+  }
 
   return (
     <View style={{ paddingBottom: 24 }}>
       {/* Header image */}
       {project.thumbnail ? (
         <View style={{ position: 'relative' }}>
-          <Image src={project.thumbnail} style={{ width: '100%', height: 220 }} mode="aspectFill" />
+          <Image src={project.thumbnail} style={{ width: '100%', height: 220 }} mode="aspectFill" onClick={() => previewImages(project.thumbnail!)} />
+          {galleryImages.length > 1 && (
+            <View style={{ position: 'absolute', bottom: 12, right: 12, background: 'rgba(0,0,0,0.5)', borderRadius: 10, padding: '4px 10px' }}>
+              <Text style={{ color: '#fff', fontSize: 11 }}>{galleryImages.length} 张图片</Text>
+            </View>
+          )}
           <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(transparent, rgba(0,0,0,0.5))' }} />
         </View>
       ) : (
         <View style={{ width: '100%', height: 120, background: 'linear-gradient(135deg,#1e40af,#3730a3)', display: 'flex', alignItems: 'flex-end', padding: '20px 16px' }}>
           <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>SURF 科研项目</Text>
+        </View>
+      )}
+
+      {/* Image gallery */}
+      {galleryImages.length > 1 && (
+        <View style={{ marginTop: -1 }}>
+          <View style={{ display: 'flex', flexDirection: 'row', overflowX: 'scroll', padding: '8px 12px', gap: 8 }}>
+            {galleryImages.map((url, i) => (
+              <Image
+                key={i}
+                src={url}
+                style={{ width: 80, height: 80, borderRadius: 8, flexShrink: 0, border: url === project.thumbnail ? '2px solid #1e40af' : '1px solid #e5e7eb' }}
+                mode="aspectFill"
+                onClick={() => previewImages(url)}
+              />
+            ))}
+          </View>
         </View>
       )}
 
@@ -185,6 +213,30 @@ export default function Detail() {
           <Text style={{ fontSize: 14, fontWeight: 700, color: '#1e40af', marginBottom: 8, display: 'block' }}>📖 详细介绍</Text>
           <Text style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{project.content}</Text>
         </View>
+
+        {/* Methods */}
+        {project.methods && (
+          <View className="card" style={{ borderRadius: 14, padding: 16, marginBottom: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: 700, color: '#1e40af', marginBottom: 8, display: 'block' }}>🔬 研究方法</Text>
+            <Text style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{project.methods}</Text>
+          </View>
+        )}
+
+        {/* Results */}
+        {project.results && (
+          <View className="card" style={{ borderRadius: 14, padding: 16, marginBottom: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: 700, color: '#1e40af', marginBottom: 8, display: 'block' }}>🏆 项目成果</Text>
+            <Text style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{project.results}</Text>
+          </View>
+        )}
+
+        {/* References */}
+        {project.references && (
+          <View className="card" style={{ borderRadius: 14, padding: 16, marginBottom: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: 700, color: '#1e40af', marginBottom: 8, display: 'block' }}>📚 参考文献</Text>
+            <Text style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{project.references}</Text>
+          </View>
+        )}
 
         {/* Tags */}
         {tags.length > 0 && (

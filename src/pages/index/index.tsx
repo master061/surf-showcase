@@ -61,14 +61,14 @@ export default function Index() {
             ))
           ))}
         </View>
-        <Text style={{ fontSize: 28, fontWeight: 800, color: '#fff', display: 'block', position: 'relative', zIndex: 1, letterSpacing: 1 }}>SURF 科研展示</Text>
-        <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, position: 'relative', zIndex: 1, letterSpacing: 0.5 }}>
+        <Text className="hero-fade-1" style={{ fontSize: 28, fontWeight: 800, color: '#fff', display: 'block', position: 'relative', zIndex: 1, letterSpacing: 1 }}>SURF 科研展示</Text>
+        <Text className="hero-fade-2" style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, position: 'relative', zIndex: 1, letterSpacing: 0.5 }}>
           Summer Undergraduate Research Fellowship
         </Text>
-        <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.78)', marginTop: 8, lineHeight: 1.6, position: 'relative', zIndex: 1 }}>
+        <Text className="hero-fade-3" style={{ fontSize: 13, color: 'rgba(255,255,255,0.78)', marginTop: 8, lineHeight: 1.6, position: 'relative', zIndex: 1 }}>
           探索优秀本科生科研成果，发现前沿研究方向
         </Text>
-        <View style={{ marginTop: 22, display: 'flex', gap: 10, position: 'relative', zIndex: 1 }}>
+        <View className="hero-fade-4" style={{ marginTop: 22, display: 'flex', gap: 10, position: 'relative', zIndex: 1 }}>
           <Navigator
             openType="switchTab"
             url="/pages/projects/index"
