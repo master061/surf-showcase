@@ -15,8 +15,26 @@ export default function Profile() {
   const [institution, setInstitution] = useState('')
   const [yearIdx, setYearIdx] = useState(3)
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [fetch, setFetch] = useState(true)
   const [error, setError] = useState('')
+
+  const chooseAvatar = () => {
+    Taro.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: async (res) => {
+        setUploading(true)
+        try {
+          const url = await api.uploadImage(res.tempFilePaths[0])
+          setAvatar(`http://localhost:3000${url}`)
+          Taro.showToast({ title: '上传成功', icon: 'success' })
+        } catch { Taro.showToast({ title: '上传失败', icon: 'none' }) }
+        finally { setUploading(false) }
+      },
+    })
+  }
 
   useEffect(() => {
     api.getProfile().then(u => {
@@ -53,14 +71,18 @@ export default function Profile() {
           {error && <View style={{ background: '#fef2f2', color: '#dc2626', padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 14, border: '1px solid #fecaca' }}>{error}</View>}
 
           {/* Avatar */}
-          <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+          <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
             {avatar ? (
-              <Image src={avatar} style={{ width: 80, height: 80, borderRadius: 40, border: '3px solid #eff6ff', boxShadow: '0 2px 10px rgba(0,0,0,0.08)' }} mode="aspectFill" />
+              <Image src={avatar} style={{ width: 84, height: 84, borderRadius: 42, border: '3px solid #eff6ff', boxShadow: '0 2px 10px rgba(0,0,0,0.08)' }} mode="aspectFill" />
             ) : (
-              <View style={{ width: 80, height: 80, borderRadius: 40, background: 'linear-gradient(135deg,#1e40af,#3730a3)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(30,64,175,0.3)' }}>
-                <Text style={{ color: '#fff', fontSize: 32, fontWeight: 700 }}>{user?.name?.[0]}</Text>
+              <View style={{ width: 84, height: 84, borderRadius: 42, background: 'linear-gradient(135deg,#1e40af,#3730a3)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(30,64,175,0.3)' }}>
+                <Text style={{ color: '#fff', fontSize: 34, fontWeight: 700 }}>{user?.name?.[0]}</Text>
               </View>
             )}
+            <View className="btn btn-outline btn-sm" style={{ marginTop: 12, borderRadius: 8, gap: 4 }} onClick={chooseAvatar}>
+              <Text style={{ fontSize: 14 }}>📷</Text>
+              <Text>{uploading ? '上传中...' : avatar ? '更换头像' : '上传头像'}</Text>
+            </View>
           </View>
 
           <View className="input-group">
@@ -97,14 +119,8 @@ export default function Profile() {
           </View>
 
           <View className="input-group">
-            <Text className="input-label">头像 URL</Text>
+            <Text className="input-label">或手动输入头像 URL</Text>
             <Input value={avatar} onInput={e => setAvatar(e.detail.value)} className="input" placeholder="https://example.com/avatar.jpg" />
-            {avatar && (
-              <View style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Image src={avatar} style={{ width: 40, height: 40, borderRadius: 20, border: '1px solid #e5e7eb' }} mode="aspectFill" onError={() => Taro.showToast({ title: '图片加载失败', icon: 'none' })} />
-                <Text style={{ fontSize: 11, color: '#9ca3af' }}>头像预览</Text>
-              </View>
-            )}
           </View>
         </View>
       </View>

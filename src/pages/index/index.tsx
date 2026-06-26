@@ -61,25 +61,38 @@ export default function Index() {
             ))
           ))}
         </View>
-        <Text className="hero-fade-1" style={{ fontSize: 28, fontWeight: 800, color: '#fff', display: 'block', position: 'relative', zIndex: 1, letterSpacing: 1 }}>SURF 科研展示</Text>
-        <Text className="hero-fade-2" style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, position: 'relative', zIndex: 1, letterSpacing: 0.5 }}>
-          Summer Undergraduate Research Fellowship
+        {/* Title group */}
+        <View className="hero-fade-1" style={{ position: 'relative', zIndex: 1 }}>
+          <Text style={{ fontSize: 30, fontWeight: 900, color: '#fff', display: 'block', letterSpacing: 2, lineHeight: 1.2 }}>SURF</Text>
+          <Text style={{ fontSize: 30, fontWeight: 900, color: '#fff', display: 'block', letterSpacing: 2, lineHeight: 1.2 }}>科研展示</Text>
+        </View>
+
+        {/* English subtitle */}
+        <Text className="hero-fade-2" style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', marginTop: 10, position: 'relative', zIndex: 1, letterSpacing: 3, textTransform: 'uppercase' }}>
+          SUMMER UNDERGRADUATE RESEARCH FELLOWSHIP
         </Text>
-        <Text className="hero-fade-3" style={{ fontSize: 13, color: 'rgba(255,255,255,0.78)', marginTop: 8, lineHeight: 1.6, position: 'relative', zIndex: 1 }}>
-          探索优秀本科生科研成果，发现前沿研究方向
+
+        {/* Divider */}
+        <View className="hero-fade-3" style={{ width: 32, height: 2, background: 'rgba(255,255,255,0.3)', marginTop: 14, marginBottom: 14, position: 'relative', zIndex: 1, borderRadius: 1 }} />
+
+        {/* Description */}
+        <Text className="hero-fade-3" style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, position: 'relative', zIndex: 1, display: 'block', fontWeight: 300 }}>
+          探索本科生优秀科研成果{'\n'}发现前沿研究方向与创新灵感
         </Text>
-        <View className="hero-fade-4" style={{ marginTop: 22, display: 'flex', gap: 10, position: 'relative', zIndex: 1 }}>
+
+        {/* Buttons */}
+        <View className="hero-fade-4" style={{ marginTop: 24, display: 'flex', gap: 10, position: 'relative', zIndex: 1 }}>
           <Navigator
             openType="switchTab"
             url="/pages/projects/index"
             onClick={() => setProjectFilter(null)}
             className="btn"
-            style={{ background: 'transparent', color: '#fff', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', border: '1px solid rgba(255,255,255,0.35)' }}
+            style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', borderRadius: 12, padding: '11px 16px', fontSize: 14, flex: 1, textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)', fontWeight: 500, backdropFilter: 'blur(4px)' }}
           >浏览项目</Navigator>
           {isLoggedIn ? (
-            <Navigator url="/pages/create/index" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', fontWeight: 600 }}>发布项目</Navigator>
+            <Navigator url="/pages/create/index" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 12, padding: '11px 16px', fontSize: 14, flex: 1, textAlign: 'center', fontWeight: 700, boxShadow: '0 4px 14px rgba(0,0,0,0.15)' }}>发布项目</Navigator>
           ) : (
-            <Navigator url="/pages/auth/login/index" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 10, padding: '10px 16px', fontSize: 13, flex: 1, textAlign: 'center', fontWeight: 600 }}>登录</Navigator>
+            <Navigator url="/pages/auth/login/index" className="btn" style={{ background: '#fff', color: '#1e40af', borderRadius: 12, padding: '11px 16px', fontSize: 14, flex: 1, textAlign: 'center', fontWeight: 700, boxShadow: '0 4px 14px rgba(0,0,0,0.15)' }}>登录</Navigator>
           )}
         </View>
         {/* Bottom curve */}
