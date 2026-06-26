@@ -1,12 +1,11 @@
 <view class="profile-wrap" wx:if="{{!fetching}}">
   <view class="profile-card">
     <!-- Avatar picker -->
-    <view class="avatar-section" bindtap="pickAvatar">
+    <view class="avatar-section">
       <image class="avatar-img" src="{{avatar}}" mode="aspectFill" wx:if="{{avatar}}"/>
       <view class="avatar-big" wx:else>{{name?name[0]:'?'}}</view>
-      <view class="avatar-edit-badge">✏️</view>
+      <view class="avatar-btn" bindtap="pickAvatar">📷 {{avatar?'更换头像':'上传头像'}}</view>
     </view>
-    <text class="avatar-hint">点击更换头像</text>
 
     <view class="form-group" wx:if="{{error}}"><view class="error-msg">{{error}}</view></view>
     <view class="form-group"><text class="form-label">邮箱</text><input class="form-input" value="{{email}}" bindinput="onInput" data-field="email" placeholder="your@email.com"/></view>
