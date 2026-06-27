@@ -4,7 +4,8 @@
 .hero{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);padding:24px 20px 28px;position:relative;overflow:hidden}
 .hero-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .hero-greeting{color:rgba(255,255,255,0.7);font-size:14px;font-weight:500}
-.hero-noti{width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.hero-noti{width:36px;height:36px;background:rgba(255,255,255,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;position:relative}
+.noti-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;background:#ff3b30;border-radius:8px;font-size:9px;color:#fff;text-align:center;line-height:16px;padding:0 4px;font-weight:600;border:1.5px solid #1a1a2e}
 .hero-title-group{margin-bottom:4px}
 .hero-title-main{font-size:30px;font-weight:900;color:#fff;line-height:1.2;letter-spacing:2px;display:block}
 .hero-sub-en{font-size:10px;color:rgba(255,255,255,0.45);margin-top:10px;display:block;letter-spacing:3px;text-transform:uppercase}

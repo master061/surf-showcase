@@ -1,0 +1,34 @@
+<view class="admin-page">
+  <view class="admin-header">
+    <text class="admin-icon">🛡️</text>
+    <text class="admin-title">管理后台</text>
+    <text class="admin-sub">SURF 科研展示平台</text>
+  </view>
+
+  <!-- Stats -->
+  <view class="stats-grid" wx:if="{{!loading}}">
+    <view class="stat-card"><text class="stat-num blue">{{stats.pendingReviews}}</text><text class="stat-lbl">待审核</text></view>
+    <view class="stat-card"><text class="stat-num purple">{{stats.totalProjects}}</text><text class="stat-lbl">项目总数</text></view>
+    <view class="stat-card"><text class="stat-num green">{{stats.totalUsers}}</text><text class="stat-lbl">用户总数</text></view>
+    <view class="stat-card"><text class="stat-num orange">{{stats.totalVotes}}</text><text class="stat-lbl">总投票数</text></view>
+  </view>
+
+  <!-- Quick Actions -->
+  <view class="action-section">
+    <text class="section-label">⚡ 快捷操作</text>
+    <navigator url="/pages/admin-review/admin-review" class="action-card {{stats && stats.pendingReviews>0?'has-badge':''}}">
+      <text class="action-icon">📋</text>
+      <view class="action-info"><text class="action-title">内容审核</text><text class="action-desc">审核待发布项目</text></view>
+      <text class="action-badge" wx:if="{{stats && stats.pendingReviews>0}}">{{stats.pendingReviews}}</text>
+    </navigator>
+    <navigator url="/pages/admin-users/admin-users" class="action-card">
+      <text class="action-icon">👥</text>
+      <view class="action-info"><text class="action-title">用户管理</text><text class="action-desc">管理平台用户与权限</text></view>
+    </navigator>
+  </view>
+
+  <!-- Loading -->
+  <view wx:if="{{loading}}" style="padding:20px">
+    <view class="skeleton" style="height:80px;border-radius:12px;margin-bottom:10px" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
+  </view>
+</view>

@@ -3,7 +3,7 @@
   <view class="hero">
     <view class="hero-top">
       <text class="hero-greeting">👋 欢迎{{user ? '回来，'+user.name : '！'}}</text>
-      <view class="hero-noti">🔔</view>
+      <view class="hero-noti" bindtap="goNotifications">🔔<text class="noti-badge" wx:if="{{unreadCount>0}}">{{unreadCount}}</text></view>
     </view>
     <view class="hero-title-group">
       <text class="hero-title-main">SURF</text>

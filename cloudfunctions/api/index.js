@@ -8,6 +8,7 @@ const SALT_ROUNDS = 10
 const USERS = 'users'
 const PROJECTS = 'projects'
 const VOTES = 'votes'
+const NOTIFICATIONS = 'notifications'
 
 function generateToken() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
@@ -239,20 +240,24 @@ async function toggleVote(openid, token, projectId) {
   const user = await resolveUser(openid, token)
   if (!user) return { code: 401, error: '请先登录' }
   try {
-    return await db.runTransaction(async (transaction) => {
+    const result = await db.runTransaction(async (transaction) => {
       const p = await transaction.collection(PROJECTS).doc(projectId).get()
       if (!p.data) return { code: 404, error: '项目不存在' }
       const exist = await transaction.collection(VOTES).where({ userId: user._id, projectId }).get()
       if (exist.data.length > 0) {
         await transaction.collection(VOTES).doc(exist.data[0]._id).remove()
         await transaction.collection(PROJECTS).doc(projectId).update({ data: { voteCount: _.inc(-1) } })
-        return { voted: false }
+        return { voted: false, project: p.data }
       } else {
         await transaction.collection(VOTES).add({ data: { userId: user._id, projectId, createdAt: now() } })
         await transaction.collection(PROJECTS).doc(projectId).update({ data: { voteCount: _.inc(1) } })
-        return { voted: true }
+        return { voted: true, project: p.data }
       }
     })
+    if (result && result.voted && result.project && result.project.userId !== user._id) {
+      await createNotification(result.project.userId, 'vote', '收到了投票', `${user.name} 赞了你的项目「${result.project.title}」`, projectId)
+    }
+    return result ? { voted: result.voted } : { code: 500, error: '操作失败' }
   } catch (e) { return { code: 500, error: '操作失败' } }
 }
 
@@ -265,6 +270,7 @@ async function submitForReview(openid, token, id) {
     if (!p) return { code: 404, error: '项目不存在' }
     if (p.userId !== user._id) return { code: 403, error: '无权限' }
     await db.collection(PROJECTS).doc(id).update({ data: { publishStatus: 'PENDING', updatedAt: now() } })
+    await createNotification(user._id, 'submit', '项目已提交审核', `你的项目「${p.title}」已提交，请等待管理员审核`, id)
     return { success: true }
   } catch (e) { return { code: 404, error: '项目不存在' } }
 }
@@ -278,6 +284,7 @@ async function approveProject(openid, token, id) {
     await db.collection(PROJECTS).doc(id).update({
       data: { publishStatus: 'APPROVED', version: (p.version || 0) + 1, rejectReason: null, updatedAt: now() },
     })
+    await createNotification(p.userId, 'approve', '项目已通过', `你的项目「${p.title}」已通过审核，正式发布`, id)
     return { success: true }
   } catch (e) { return { code: 404, error: '项目不存在' } }
 }
@@ -291,6 +298,7 @@ async function rejectProject(openid, token, id, reason) {
     await db.collection(PROJECTS).doc(id).update({
       data: { publishStatus: 'REJECTED', rejectReason: reason || '审核未通过', updatedAt: now() },
     })
+    await createNotification(p.userId, 'reject', '项目被驳回', `你的项目「${p.title}」未通过审核，原因：${reason || '审核未通过'}`, id)
     return { success: true }
   } catch (e) { return { code: 404, error: '项目不存在' } }
 }
@@ -298,6 +306,18 @@ async function rejectProject(openid, token, id, reason) {
 async function getPendingProjects() {
   const res = await db.collection(PROJECTS).where({ publishStatus: 'PENDING' }).orderBy('createdAt', 'desc').get()
   return { projects: res.data }
+}
+
+async function getAdminStats(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  const [totalProjects, totalUsers, pendingReviews, totalVotes] = await Promise.all([
+    db.collection(PROJECTS).count(),
+    db.collection(USERS).count(),
+    db.collection(PROJECTS).where({ publishStatus: 'PENDING' }).count(),
+    db.collection(VOTES).count(),
+  ])
+  return { stats: { totalProjects: totalProjects.total, totalUsers: totalUsers.total, pendingReviews: pendingReviews.total, totalVotes: totalVotes.total } }
 }
 
 async function getAllUsers(openid, token) {
@@ -312,6 +332,42 @@ async function setUserRole(openid, token, userId, role) {
   if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
   await db.collection(USERS).doc(userId).update({ data: { role } })
   return { success: true }
+}
+
+// ============== Notification Helpers ==============
+async function createNotification(userId, type, title, content, projectId) {
+  await db.collection(NOTIFICATIONS).add({
+    data: { userId, type, title, content, projectId: projectId || null, read: false, createdAt: now() },
+  })
+}
+
+async function getNotifications(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user) return { code: 401, error: '未登录' }
+  const res = await db.collection(NOTIFICATIONS).where({ userId: user._id }).orderBy('createdAt', 'desc').limit(50).get()
+  return { notifications: res.data }
+}
+
+async function markNotificationRead(openid, token, id) {
+  const user = await resolveUser(openid, token)
+  if (!user) return { code: 401, error: '未登录' }
+  await db.collection(NOTIFICATIONS).doc(id).update({ data: { read: true } })
+  return { success: true }
+}
+
+async function markAllRead(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user) return { code: 401, error: '未登录' }
+  const res = await db.collection(NOTIFICATIONS).where({ userId: user._id, read: false }).get()
+  await Promise.all(res.data.map(n => db.collection(NOTIFICATIONS).doc(n._id).update({ data: { read: true } })))
+  return { success: true }
+}
+
+async function getUnreadCount(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user) return { code: 401, error: '未登录' }
+  const res = await db.collection(NOTIFICATIONS).where({ userId: user._id, read: false }).count()
+  return { count: res.total }
 }
 
 // 首次管理员设置：将当前登录用户设为管理员（仅首次使用）
@@ -347,9 +403,14 @@ exports.main = async (event, context) => {
     approveProject: () => approveProject(openid, params.token, params.id),
     rejectProject: () => rejectProject(openid, params.token, params.id, params.reason),
     getPendingProjects: () => getPendingProjects(),
+    getAdminStats: () => getAdminStats(openid, params.token),
     getAllUsers: () => getAllUsers(openid, params.token),
     setUserRole: () => setUserRole(openid, params.token, params.userId, params.role),
     setupAdmin: () => setupAdmin(openid, params.token),
+    getNotifications: () => getNotifications(openid, params.token),
+    markNotificationRead: () => markNotificationRead(openid, params.token, params.id),
+    markAllRead: () => markAllRead(openid, params.token),
+    getUnreadCount: () => getUnreadCount(openid, params.token),
   }
 
   const h = handlers[action]

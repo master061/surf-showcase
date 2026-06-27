@@ -11,7 +11,9 @@
     "pages/complete-info/complete-info",
     "pages/profile/profile",
     "pages/admin-review/admin-review",
-    "pages/admin-users/admin-users"
+    "pages/admin-users/admin-users",
+    "pages/notifications/notifications",
+    "pages/admin/admin"
   ],
   "window": {
     "navigationBarTitleText": "SURF 科研展示",

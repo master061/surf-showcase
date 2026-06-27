@@ -1,8 +1,9 @@
 const { callFunction, typeLabels, formatDate, parseTags } = require('../../utils/api')
 const app = getApp()
 Page({
-  data: { project: null, loading: true, voted: false, voteCount: 0, tags: [], typeLabels },
+  data: { project: null, loading: true, voted: false, voteCount: 0, tags: [], typeLabels, user: null },
   onLoad(params) {
+    this.setData({ user: app.globalData.user })
     if (!params.id) return
     callFunction('getProject', { id: params.id }).then(p => {
       this.setData({ project: p, voteCount: p.voteCount || 0, tags: parseTags(p.tags), loading: false })

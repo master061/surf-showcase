@@ -61,8 +61,7 @@
 
   <view class="admin-section" wx:if="{{user && user.role==='ADMIN'}}">
     <text class="admin-title">🛡️ 管理后台</text>
-    <navigator url="/pages/admin-review/admin-review" class="admin-link">📋 内容审核</navigator>
-    <navigator url="/pages/admin-users/admin-users" class="admin-link">👥 用户管理</navigator>
+    <navigator url="/pages/admin/admin" class="admin-link">⚡ 进入管理后台</navigator>
   </view>
 
   <view style="margin-top:24px;text-align:center"><text class="logout-btn" bindtap="logout">退出登录</text></view>

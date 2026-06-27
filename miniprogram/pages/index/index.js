@@ -1,7 +1,7 @@
 const { callFunction, fields: fieldList } = require('../../utils/api')
 const app = getApp()
 Page({
-  data: { hotProjects:[], latestProjects:[], recruitProjects:[], loading:true, user:null, fields:fieldList,
+  data: { hotProjects:[], latestProjects:[], recruitProjects:[], loading:true, user:null, unreadCount:0, fields:fieldList,
     fieldIcons:['💻','🤖','🧬','📐','🧪','⚙️','🏛️','🎨'],
     fieldColors:['#eff6ff','#f0fdf4','#fef2f2','#f5f3ff','#fefce8','#fff7ed','#ecfeff','#fdf2f8'],
     stats:{projects:0,recruitCount:0,fields:8} },
@@ -11,10 +11,18 @@ Page({
       callFunction('getProjects',{sort:'hot',limit:5}),
       callFunction('getProjects',{sort:'newest',limit:3}),
       callFunction('getProjects',{status:'RECRUITING',limit:5}),
-    ]).then(([hot,latest,recruit])=>{
+      callFunction('getUnreadCount').catch(()=>({count:0})),
+    ]).then(([hot,latest,recruit,unread])=>{
       this.setData({hotProjects:hot.projects,latestProjects:latest.projects,recruitProjects:recruit.projects,loading:false,
-        'stats.projects':hot.total,'stats.recruitCount':recruit.total})
+        'stats.projects':hot.total,'stats.recruitCount':recruit.total, unreadCount:unread?.count||0})
     }).catch(()=>this.setData({loading:false}))
+  },
+  goNotifications(){
+    if (app.globalData.user) {
+      wx.navigateTo({url:'/pages/notifications/notifications'})
+    } else {
+      wx.navigateTo({url:'/pages/login/login'})
+    }
   },
   onAction(){
     if (app.globalData.user) {

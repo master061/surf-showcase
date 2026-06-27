@@ -1,0 +1,21 @@
+.admin-page{padding:0}
+.admin-header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:28px 20px;text-align:center}
+.admin-icon{font-size:40px;display:block;margin-bottom:8px}
+.admin-title{font-size:22px;font-weight:800;color:#fff;display:block;letter-spacing:-0.5px}
+.admin-sub{font-size:12px;color:rgba(255,255,255,0.5);display:block;margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;margin-top:-10px}
+.stat-card{background:#fff;border-radius:14px;padding:16px 12px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.stat-num{font-size:28px;font-weight:800;display:block;letter-spacing:-1px}
+.stat-num.blue{color:#007aff}
+.stat-num.purple{color:#667eea}
+.stat-num.green{color:#059669}
+.stat-num.orange{color:#d97706}
+.stat-lbl{font-size:11px;color:#86868b;display:block;margin-top:4px}
+.action-section{padding:0 16px}
+.section-label{font-size:15px;font-weight:700;color:#1d1d1f;display:block;margin-bottom:10px}
+.action-card{display:flex;align-items:center;gap:14px;background:#fff;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.04);position:relative}
+.action-icon{font-size:28px}
+.action-info{flex:1}
+.action-title{font-size:15px;font-weight:700;color:#1d1d1f;display:block;margin-bottom:2px}
+.action-desc{font-size:12px;color:#86868b;display:block}
+.action-badge{position:absolute;top:12px;right:12px;min-width:20px;height:20px;background:#ff3b30;border-radius:10px;font-size:10px;color:#fff;text-align:center;line-height:20px;padding:0 6px;font-weight:700}
