@@ -6,6 +6,12 @@ Page({
     suggestions:{titles:[],tags:[],studentNames:[],fields:[]}, showSug:false, sugTimer:null },
   onLoad(params){
     const app = getApp()
+    callFunction('getFields').then(r => {
+      if (r && r.fields && r.fields.length) {
+        const names = r.fields.map(f => f.name || f)
+        this.setData({ fields: ['全部', ...names] })
+      }
+    }).catch(() => {})
     if (app.globalData.pendingStatus) { this.setData({ statusVal: app.globalData.pendingStatus }); app.globalData.pendingStatus = '' }
     if (app.globalData.pendingSort) { this.setData({ sort: app.globalData.pendingSort }); app.globalData.pendingSort = '' }
     if (app.globalData.pendingField) { this.setData({ search: app.globalData.pendingField }); app.globalData.pendingField = '' }

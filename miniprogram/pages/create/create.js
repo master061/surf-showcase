@@ -4,6 +4,7 @@ const app = getApp()
 Page({
   data: {
     step: 1, loading: false, error: '',
+    fields: fields,
 
     // Basic info
     title: '', field: 0, type: 0, year: 2,
@@ -30,6 +31,23 @@ Page({
     fields, years, types, typeValues, durationOpts, recruitCountOpts,
   },
 
+  onLoad() {
+    this.loadFields()
+  },
+  onShow() {
+    this.loadFields()
+  },
+  loadFields() {
+    callFunction('getFields').then(r => {
+      if (r && r.fields && r.fields.length) {
+        const names = r.fields.map(f => f.name || f)
+        console.log('[fields loaded]', names)
+        this.setData({ fields: names })
+      }
+    }).catch(e => {
+      console.error('[fields error]', e)
+    })
+  },
   nextStep() {
     const d = this.data
     if (d.step === 1) {

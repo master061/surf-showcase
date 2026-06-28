@@ -26,4 +26,13 @@ Page({
       },
     })
   },
+  reportProject() {
+    wx.showModal({
+      title: '举报项目', content: '请输入举报原因', editable: true, placeholderText: '请说明举报原因...', success: r => {
+        if (r.confirm && r.content) callFunction('createReport', { projectId: this.data.project._id, reason: r.content }).then(() => {
+          wx.showToast({ title: '举报已提交', icon: 'success' })
+        }).catch(() => wx.showToast({ title: '举报失败', icon: 'none' }))
+      },
+    })
+  },
 })

@@ -21,6 +21,8 @@
         <text wx:elif="{{item.type==='reject'}}">❌</text>
         <text wx:elif="{{item.type==='vote'}}">👍</text>
         <text wx:elif="{{item.type==='submit'}}">📤</text>
+        <text wx:elif="{{item.type==='delete'}}">🗑️</text>
+        <text wx:elif="{{item.type==='report'}}">🚨</text>
         <text wx:else>🔔</text>
       </view>
       <view class="notif-body">

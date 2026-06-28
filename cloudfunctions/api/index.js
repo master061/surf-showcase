@@ -9,6 +9,10 @@ const USERS = 'users'
 const PROJECTS = 'projects'
 const VOTES = 'votes'
 const NOTIFICATIONS = 'notifications'
+const FIELDS = 'fields'
+const ANNOUNCEMENTS = 'announcements'
+const REPORTS = 'reports'
+const ADMIN_LOGS = 'adminLogs'
 
 function generateToken() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
@@ -213,6 +217,9 @@ async function deleteProject(openid, token, id) {
     if (p.userId !== user._id && user.role !== 'ADMIN') return { code: 403, error: '无权限' }
     await db.collection(PROJECTS).doc(id).remove()
     await db.collection(VOTES).where({ projectId: id }).remove()
+    if (p.userId !== user._id) {
+      await createNotification(p.userId, 'delete', '项目已被删除', `你的项目「${p.title}」已被管理员删除`, id)
+    }
     return { success: true }
   } catch (e) { return { code: 404, error: '项目不存在' } }
 }
@@ -370,6 +377,153 @@ async function getUnreadCount(openid, token) {
   return { count: res.total }
 }
 
+// ============== Admin Log Helper ==============
+async function logAdminAction(adminId, action, detail) {
+  await db.collection(ADMIN_LOGS).add({ data: { adminId, action, detail: detail || '', createdAt: now() } })
+}
+
+// ============== New Admin Handlers ==============
+async function getAllProjects(openid, token, params) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  const { page = 1, limit = 20, status, publishStatus, field } = params
+  const cond = []
+  if (status) cond.push({ status })
+  if (publishStatus) cond.push({ publishStatus })
+  if (field) cond.push({ field })
+  const where = cond.length ? _.and(cond) : {}
+  const [projs, total] = await Promise.all([
+    db.collection(PROJECTS).where(where).orderBy('createdAt', 'desc').skip((parseInt(page) - 1) * parseInt(limit)).limit(parseInt(limit)).get(),
+    db.collection(PROJECTS).where(where).count(),
+  ])
+  return { projects: projs.data, total: total.total }
+}
+
+async function getFullStats(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  const [projects, users, votes, pending, fieldsCount, reports, logs] = await Promise.all([
+    db.collection(PROJECTS).count(),
+    db.collection(USERS).count(),
+    db.collection(VOTES).count(),
+    db.collection(PROJECTS).where({ publishStatus: 'PENDING' }).count(),
+    db.collection(FIELDS).count(),
+    db.collection(REPORTS).where({ resolved: false }).count(),
+    db.collection(ADMIN_LOGS).orderBy('createdAt', 'desc').limit(10).get(),
+  ])
+  return {
+    stats: {
+      totalProjects: projects.total, totalUsers: users.total, totalVotes: votes.total,
+      pendingReviews: pending.total, totalFields: fieldsCount.total, pendingReports: reports.total,
+    },
+    recentLogs: logs.data,
+  }
+}
+
+// Fields management
+const DEFAULT_ICONS = { '计算机科学':'💻','人工智能':'🤖','生物医药':'🧬','物理数学':'📐','化学材料':'🧪','工程技术':'⚙️','社会科学':'🏛️','人文艺术':'🎨' }
+const ICON_LIST = ['💻','🤖','🧬','📐','🧪','⚙️','🏛️','🎨','📡','🔬','📊','🎯','📝','🔭','🧫','⚖️','🌍','🔮','🧩','🎵','📖','🎨','🏗️','🚀','💡','🔋','🧠','🖥️','📈','🔬','🌿','🔭']
+
+async function getFields() {
+  const defaults = [['计算机科学','💻'],['人工智能','🤖'],['生物医药','🧬'],['物理数学','📐'],['化学材料','🧪'],['工程技术','⚙️'],['社会科学','🏛️'],['人文艺术','🎨']]
+  try {
+    let res = await db.collection(FIELDS).orderBy('order', 'asc').get()
+    const dbNames = new Set(res.data.map(f => f.name))
+    // Auto-seed defaults + update missing icons
+    for (const [name, icon] of defaults) {
+      if (!dbNames.has(name)) {
+        const count = await db.collection(FIELDS).count()
+        await db.collection(FIELDS).add({ data: { name, icon, order: count.total + 1 } })
+      } else {
+        // Update existing entry if icon is missing
+        const existing = res.data.find(f => f.name === name)
+        if (existing && !existing.icon) {
+          await db.collection(FIELDS).doc(existing._id).update({ data: { icon } })
+        }
+      }
+    }
+    // Also update any remaining entries without icons (custom fields)
+    res = await db.collection(FIELDS).orderBy('order', 'asc').get()
+    for (const f of res.data) {
+      if (!f.icon) {
+        await db.collection(FIELDS).doc(f._id).update({ data: { icon: '📁' } })
+      }
+    }
+    // Re-fetch after seeding
+    res = await db.collection(FIELDS).orderBy('order', 'asc').get()
+    return { fields: res.data }
+  } catch (e) {
+    return { fields: defaults.map(([name, icon], i) => ({ name, icon, order: i })) }
+  }
+}
+async function addField(openid, token, name, icon) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  const count = await db.collection(FIELDS).count()
+  await db.collection(FIELDS).add({ data: { name, icon: icon || '📁', order: count.total + 1 } })
+  await logAdminAction(user._id, 'addField', `添加研究领域：${name}`)
+  return { success: true }
+}
+async function deleteField(openid, token, id) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  await db.collection(FIELDS).doc(id).remove()
+  await logAdminAction(user._id, 'deleteField', `删除研究领域：${id}`)
+  return { success: true }
+}
+
+// Announcements
+async function getAnnouncements() {
+  const res = await db.collection(ANNOUNCEMENTS).orderBy('createdAt', 'desc').limit(5).get()
+  return { announcements: res.data }
+}
+async function addAnnouncement(openid, token, content) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  if (!content) return { code: 400, error: '请输入公告内容' }
+  await db.collection(ANNOUNCEMENTS).add({ data: { content, active: true, createdAt: now() } })
+  await logAdminAction(user._id, 'addAnnouncement', `发布公告：${content.slice(0, 30)}`)
+  return { success: true }
+}
+async function deleteAnnouncement(openid, token, id) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  await db.collection(ANNOUNCEMENTS).doc(id).remove()
+  return { success: true }
+}
+
+// Report system
+async function createReport(openid, token, projectId, reason) {
+  const user = await resolveUser(openid, token)
+  if (!user) return { code: 401, error: '请先登录' }
+  await db.collection(REPORTS).add({ data: { userId: user._id, projectId, reason: reason || '', resolved: false, createdAt: now() } })
+  return { success: true }
+}
+async function getReports(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  const res = await db.collection(REPORTS).where({ resolved: false }).orderBy('createdAt', 'desc').get()
+  return { reports: res.data }
+}
+async function resolveReport(openid, token, id) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  const report = (await db.collection(REPORTS).doc(id).get()).data
+  if (report) {
+    await createNotification(report.userId, 'report', '举报已处理', `你举报的内容已由管理员处理`, report.projectId)
+  }
+  await db.collection(REPORTS).doc(id).update({ data: { resolved: true } })
+  return { success: true }
+}
+
+// Logs
+async function getAdminLogs(openid, token) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  const res = await db.collection(ADMIN_LOGS).orderBy('createdAt', 'desc').limit(50).get()
+  return { logs: res.data }
+}
+
 // 首次管理员设置：将当前登录用户设为管理员（仅首次使用）
 async function setupAdmin(openid, token) {
   const user = await resolveUser(openid, token)
@@ -407,6 +561,18 @@ exports.main = async (event, context) => {
     getAllUsers: () => getAllUsers(openid, params.token),
     setUserRole: () => setUserRole(openid, params.token, params.userId, params.role),
     setupAdmin: () => setupAdmin(openid, params.token),
+    getAllProjects: () => getAllProjects(openid, params.token, params),
+    getFullStats: () => getFullStats(openid, params.token),
+    getFields: () => getFields(),
+    addField: () => addField(openid, params.token, params.name),
+    deleteField: () => deleteField(openid, params.token, params.id),
+    getAnnouncements: () => getAnnouncements(),
+    addAnnouncement: () => addAnnouncement(openid, params.token, params.content),
+    deleteAnnouncement: () => deleteAnnouncement(openid, params.token, params.id),
+    createReport: () => createReport(openid, params.token, params.projectId, params.reason),
+    getReports: () => getReports(openid, params.token),
+    resolveReport: () => resolveReport(openid, params.token, params.id),
+    getAdminLogs: () => getAdminLogs(openid, params.token),
     getNotifications: () => getNotifications(openid, params.token),
     markNotificationRead: () => markNotificationRead(openid, params.token, params.id),
     markAllRead: () => markAllRead(openid, params.token),

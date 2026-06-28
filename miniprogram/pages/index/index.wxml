@@ -23,6 +23,14 @@
     </view>
   </view>
 
+  <!-- Announcements -->
+  <view class="announce-bar" wx:if="{{announcements.length>0}}">
+    <text class="announce-icon">📢</text>
+    <swiper class="announce-swiper" vertical autoplay interval="3000" circular="{{false}}">
+      <swiper-item wx:for="{{announcements}}" wx:key="_id"><text class="announce-text">{{item.content}}</text></swiper-item>
+    </swiper>
+  </view>
+
   <!-- Recruiting -->
   <view class="section" wx:if="{{recruitProjects.length>0}}">
     <view class="sec-header"><text class="sec-title">🔍 正在招人</text><text class="sec-more" bindtap="goProjectsWith" data-status="RECRUITING">查看全部 →</text></view>
@@ -35,9 +43,9 @@
   <view class="section">
     <view class="sec-header"><text class="sec-title">📂 研究领域</text></view>
     <view class="field-grid">
-      <view class="field-item" wx:for="{{fields}}" wx:for-index="i" wx:key="*this" bindtap="goProjects" data-field="{{item}}">
-        <text class="field-icon">{{fieldIcons[i]}}</text>
-        <text class="field-name">{{item}}</text>
+      <view class="field-item" wx:for="{{fieldList}}" wx:for-index="i" wx:key="name" bindtap="goProjects" data-field="{{item.name}}">
+        <text class="field-icon">{{item.icon}}</text>
+        <text class="field-name">{{item.name}}</text>
       </view>
     </view>
   </view>

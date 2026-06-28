@@ -35,3 +35,5 @@
 .owner-btn{flex:1;text-align:center;padding:12px 0;border-radius:12px;font-size:14px;font-weight:500}
 .owner-btn.edit{background:#f5f8ff;color:#007aff;border:1px solid rgba(0,122,255,0.2)}
 .owner-btn.delete{background:#fef2f2;color:#dc2626}
+.report-action{text-align:center;padding:10px;margin-top:8px;font-size:12px;color:#9ca3af;border:1px solid #e5e5ea;border-radius:10px}
+

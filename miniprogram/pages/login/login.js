@@ -4,7 +4,7 @@ const app = getApp()
 Page({
   data: { loading: false },
 
-  wechatLogin(userInfo) {
+  doLogin(userInfo) {
     this.setData({ loading: true })
     const data = {}
     if (userInfo) {
@@ -31,20 +31,25 @@ Page({
     }).finally(() => this.setData({ loading: false }))
   },
 
-  onGetUserInfo(e) {
-    const userInfo = e.detail.userInfo
-    if (userInfo) {
-      // 用户授权了微信信息
-      wx.login({
+  wechatLogin() {
+    // Try to get user profile (nickname + avatar)
+    if (wx.getUserProfile) {
+      wx.getUserProfile({
+        desc: '用于展示用户信息',
         success: (res) => {
-          if (res.code) {
-            this.wechatLogin(userInfo)
-          }
+          this.doLogin(res.userInfo)
+        },
+        fail: () => {
+          // User rejected or API not available, login without nickname
+          this.doLogin(null)
         },
       })
     } else {
-      // 用户拒绝授权，使用降级登录（没有昵称）
-      this.wechatLogin(null)
+      // Fallback for older versions
+      wx.getUserInfo({
+        success: (res) => this.doLogin(res.userInfo),
+        fail: () => this.doLogin(null),
+      })
     }
   },
 

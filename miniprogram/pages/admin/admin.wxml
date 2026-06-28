@@ -5,30 +5,76 @@
     <text class="admin-sub">SURF 科研展示平台</text>
   </view>
 
-  <!-- Stats -->
-  <view class="stats-grid" wx:if="{{!loading}}">
-    <view class="stat-card"><text class="stat-num blue">{{stats.pendingReviews}}</text><text class="stat-lbl">待审核</text></view>
-    <view class="stat-card"><text class="stat-num purple">{{stats.totalProjects}}</text><text class="stat-lbl">项目总数</text></view>
-    <view class="stat-card"><text class="stat-num green">{{stats.totalUsers}}</text><text class="stat-lbl">用户总数</text></view>
-    <view class="stat-card"><text class="stat-num orange">{{stats.totalVotes}}</text><text class="stat-lbl">总投票数</text></view>
-  </view>
-
-  <!-- Quick Actions -->
-  <view class="action-section">
-    <text class="section-label">⚡ 快捷操作</text>
-    <navigator url="/pages/admin-review/admin-review" class="action-card {{stats && stats.pendingReviews>0?'has-badge':''}}">
-      <text class="action-icon">📋</text>
-      <view class="action-info"><text class="action-title">内容审核</text><text class="action-desc">审核待发布项目</text></view>
-      <text class="action-badge" wx:if="{{stats && stats.pendingReviews>0}}">{{stats.pendingReviews}}</text>
-    </navigator>
-    <navigator url="/pages/admin-users/admin-users" class="action-card">
-      <text class="action-icon">👥</text>
-      <view class="action-info"><text class="action-title">用户管理</text><text class="action-desc">管理平台用户与权限</text></view>
-    </navigator>
+  <!-- Tab Bar -->
+  <view class="tab-bar-admin">
+    <text class="tab {{tab==='overview'?'active':''}}" data-tab="overview" bindtap="switchTab">概览</text>
+    <text class="tab {{tab==='projects'?'active':''}}" data-tab="projects" bindtap="switchTab">项目</text>
+    <text class="tab {{tab==='fields'?'active':''}}" data-tab="fields" bindtap="switchTab">领域</text>
+    <text class="tab {{tab==='announce'?'active':''}}" data-tab="announce" bindtap="switchTab">公告</text>
+    <text class="tab {{tab==='reports'?'active':''}}" data-tab="reports" bindtap="switchTab">举报</text>
+    <text class="tab {{tab==='logs'?'active':''}}" data-tab="logs" bindtap="switchTab">日志</text>
   </view>
 
   <!-- Loading -->
-  <view wx:if="{{loading}}" style="padding:20px">
-    <view class="skeleton" style="height:80px;border-radius:12px;margin-bottom:10px" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
-  </view>
+  <view wx:if="{{loading}}"><view class="skeleton" style="height:60px;border-radius:12px;margin:12px 16px" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view></view>
+
+  <!-- ====== Overview ====== -->
+  <block wx:if="{{tab==='overview' && !loading}}">
+    <view class="stats-grid">
+      <view class="stat-card"><text class="stat-num blue">{{stats.pendingReviews||0}}</text><text class="stat-lbl">待审核</text></view>
+      <view class="stat-card"><text class="stat-num purple">{{stats.totalProjects||0}}</text><text class="stat-lbl">项目总数</text></view>
+      <view class="stat-card"><text class="stat-num green">{{stats.totalUsers||0}}</text><text class="stat-lbl">用户总数</text></view>
+      <view class="stat-card"><text class="stat-num red">{{stats.pendingReports||0}}</text><text class="stat-lbl">待处理举报</text></view>
+    </view>
+    <view class="action-section">
+      <text class="section-label">⚡ 快捷操作</text>
+      <navigator url="/pages/admin-review/admin-review" class="action-card">
+        <text class="action-icon">📋</text><view class="action-info"><text class="action-title">内容审核</text><text class="action-desc">审核待发布项目</text></view>
+        <text class="action-badge" wx:if="{{stats.pendingReviews>0}}">{{stats.pendingReviews}}</text>
+      </navigator>
+      <navigator url="/pages/admin-users/admin-users" class="action-card">
+        <text class="action-icon">👥</text><view class="action-info"><text class="action-title">用户管理</text><text class="action-desc">管理平台用户与权限</text></view>
+      </navigator>
+    </view>
+  </block>
+
+  <!-- ====== All Projects ====== -->
+  <block wx:if="{{tab==='projects' && !loading}}">
+    <view class="filter-bar"><view class="filter-chip {{filterStatus===''?'active':''}}" data-status="" bindtap="filterProjects">全部</view><view class="filter-chip {{filterStatus==='COMPLETED'?'active':''}}" data-status="COMPLETED" bindtap="filterProjects">已完成</view><view class="filter-chip {{filterStatus==='RECRUITING'?'active':''}}" data-status="RECRUITING" bindtap="filterProjects">招人中</view><view class="filter-chip {{filterStatus==='PENDING'?'active':''}}" data-status="PENDING" bindtap="filterProjects">待审核</view></view>
+    <view class="proj-list"><view class="proj-item" wx:for="{{allProjects}}" wx:key="_id">
+      <navigator url="/pages/detail/detail?id={{item._id}}" class="proj-title">{{item.title}}</navigator>
+      <text class="proj-meta">{{item.field}} · {{item.status==='RECRUITING'?'🔍 招人中':'✅ 已完成'}} · {{item.publishStatus}}</text>
+      <text class="proj-del" data-id="{{item._id}}" bindtap="delProject">🗑️ 删除</text>
+    </view></view>
+  </block>
+
+  <!-- ====== Fields ====== -->
+  <block wx:if="{{tab==='fields' && !loading}}">
+    <view class="section-pad">
+      <view class="add-row"><input class="add-input" value="{{newField}}" bindinput="onFieldInput" placeholder="新领域名称"/><picker mode="selector" range="{{iconList}}" value="{{newFieldIcon}}" bindchange="onIconChange"><view class="icon-picker">{{iconList[newFieldIcon]}}</view></picker><view class="add-btn" bindtap="addField">添加</view></view>
+    </view>
+    <view class="section-pad"><view class="field-chip" wx:for="{{fields}}" wx:key="name"><text class="field-icon">{{item.icon||'📁'}}</text><text class="field-name">{{item.name}}</text><text class="field-del" data-id="{{item._id}}" bindtap="deleteField" wx:if="{{item._id}}">✕</text></view></view>
+  </block>
+
+  <!-- ====== Announcements ====== -->
+  <block wx:if="{{tab==='announce' && !loading}}">
+    <view class="section-pad"><view class="add-row"><input class="add-input" value="{{newAnnounce}}" bindinput="onAnnounceInput" placeholder="输入公告内容"/><view class="add-btn" bindtap="addAnnouncement">发布</view></view></view>
+    <view class="section-pad"><view class="announce-item" wx:for="{{announcements}}" wx:key="_id"><text class="announce-text">{{item.content}}</text><text class="announce-del" data-id="{{item._id}}" bindtap="deleteAnnouncement">✕</text></view></view>
+  </block>
+
+  <!-- ====== Reports ====== -->
+  <block wx:if="{{tab==='reports' && !loading}}">
+    <view wx:if="{{reports.length===0}}" class="empty-state"><text class="empty-state-icon">✅</text><text class="empty-state-text">暂无举报</text></view>
+    <view class="report-item" wx:for="{{reports}}" wx:key="_id">
+      <navigator url="/pages/detail/detail?id={{item.projectId}}" class="report-project">📄 查看被举报项目</navigator>
+      <text class="report-reason">举报原因：{{item.reason||'未说明'}}</text>
+      <view class="report-actions"><navigator url="/pages/detail/detail?id={{item.projectId}}" class="report-btn view">查看项目</navigator><text class="report-btn resolve" data-id="{{item._id}}" bindtap="resolveReport">标记已处理</text></view>
+    </view>
+  </block>
+
+  <!-- ====== Logs ====== -->
+  <block wx:if="{{tab==='logs' && !loading}}">
+    <view class="log-item" wx:for="{{logs}}" wx:key="_id"><text class="log-action">{{item.action}}</text><text class="log-detail">{{item.detail}}</text></view>
+    <view wx:if="{{logs.length===0}}" class="empty-state"><text class="empty-state-icon">📋</text><text class="empty-state-text">暂无操作记录</text></view>
+  </block>
 </view>
