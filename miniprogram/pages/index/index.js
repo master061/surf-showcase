@@ -13,14 +13,21 @@ Page({
       callFunction('getUnreadCount').catch(()=>({count:0})),
       callFunction('getAnnouncements').catch(()=>({announcements:[]})),
       callFunction('getFields').catch(()=>({fields:[]})),
-    ]).then(([hot,latest,recruit,unread,ann,fields])=>{
+      callFunction('getPublicStats').catch(()=>({totalProjects:0,totalUsers:0,totalVotes:0})),
+    ]).then(([hot,latest,recruit,unread,ann,fields,pStats])=>{
       const iconMap = {'计算机科学':'💻','人工智能':'🤖','生物医药':'🧬','物理数学':'📐','化学材料':'🧪','工程技术':'⚙️','社会科学':'🏛️','人文艺术':'🎨'}
       const fm = (fields?.fields||[]).map(f => ({ name: f.name || f, icon: f.icon || iconMap[f.name] || '📁' }))
       const colors = ['#eff6ff','#f0fdf4','#fef2f2','#f5f3ff','#fefce8','#fff7ed','#ecfeff','#fdf2f8','#f0f0ff','#fff0f0','#f0fff4','#fffbe6','#e6f7ff','#f5e6ff','#fff0e6','#e6fff5']
       this.setData({fieldList:fm, fieldColors:fm.map((_,i)=>colors[i%colors.length]),
         hotProjects:hot.projects,latestProjects:latest.projects,recruitProjects:recruit.projects,loading:false,
-        'stats.projects':hot.total,'stats.recruitCount':recruit.total, 'stats.fields':fm.length, unreadCount:unread?.count||0, announcements:ann?.announcements||[]})
+        'stats.projects':pStats?.totalProjects||hot.total,'stats.recruitCount':recruit.total,
+        'stats.fields':fm.length, 'stats.users':pStats?.totalUsers||0, 'stats.votes':pStats?.totalVotes||0,
+        unreadCount:unread?.count||0, announcements:ann?.announcements||[]})
     }).catch(()=>this.setData({loading:false}))
+  },
+  onPullDownRefresh(){
+    this.onShow()
+    setTimeout(() => wx.stopPullDownRefresh(), 1000)
   },
   goNotifications(){
     if (app.globalData.user) {
@@ -42,6 +49,9 @@ Page({
     const field = e.currentTarget.dataset.field
     if (field) app.globalData.pendingField = field
     wx.switchTab({url:'/pages/projects/projects'})
+  },
+  goAnnouncements(){
+    wx.navigateTo({url:'/pages/announcement/announcement'})
   },
   goProjectsWith(e){
     const ds = e.currentTarget.dataset

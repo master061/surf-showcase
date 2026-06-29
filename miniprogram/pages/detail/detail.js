@@ -7,6 +7,13 @@ Page({
     if (!params.id) return
     callFunction('getProject', { id: params.id }).then(p => {
       this.setData({ project: p, voteCount: p.voteCount || 0, tags: parseTags(p.tags), loading: false })
+      // Check if user has voted
+      const token = wx.getStorageSync('token')
+      if (token) {
+        callFunction('getUserVote', { projectId: params.id }).then(r => {
+          if (r && r.voted !== undefined) this.setData({ voted: r.voted })
+        }).catch(() => {})
+      }
     }).catch(() => { wx.showToast({ title: '加载失败', icon: 'none' }); wx.navigateBack() })
   },
   toggleVote() {
@@ -25,6 +32,12 @@ Page({
         }).catch(() => wx.showToast({ title: '删除失败', icon: 'none' }))
       },
     })
+  },
+  contactOwner() {
+    const info = this.data.project.contactInfo
+    if (info) {
+      wx.setClipboardData({ data: info, success: () => wx.showToast({ title: '已复制联系方式', icon: 'success' }) })
+    }
   },
   reportProject() {
     wx.showModal({

@@ -1,0 +1,17 @@
+.ann-page{padding:12px 16px;min-height:100vh;background:#f5f5f7}
+.ann-item{background:#fff;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.ann-item:active{background:#f8f9ff}
+.ann-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ann-time{font-size:11px;color:#aeaeb2}
+.ann-edit{font-size:12px;color:#007aff;padding:4px 10px;border-radius:6px;border:1px solid rgba(0,122,255,0.2)}
+.ann-body{font-size:15px;color:#1d1d1f;line-height:1.7}
+.line-clamp-2{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
+/* Edit mode */
+.edit-section{background:#fff;border-radius:16px;padding:20px;margin-top:12px}
+.form-label{font-size:14px;font-weight:600;color:#1d1d1f;display:block;margin-bottom:10px}
+.edit-textarea{width:100%;padding:14px;border:1.5px solid #e5e5ea;border-radius:12px;font-size:15px;background:#fff;font-family:inherit;box-sizing:border-box;resize:none;line-height:1.6}
+.edit-actions{display:flex;gap:10px;margin-top:14px}
+.edit-btn{flex:1;text-align:center;padding:12px 0;border-radius:12px;font-size:15px;font-weight:600}
+.edit-btn.cancel{background:#f5f5f7;color:#515154}
+.edit-btn.save{background:#007aff;color:#fff}

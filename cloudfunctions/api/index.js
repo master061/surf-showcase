@@ -243,6 +243,13 @@ async function getSuggestions(q) {
   }
 }
 
+async function getUserVote(openid, token, projectId) {
+  const user = await resolveUser(openid, token)
+  if (!user) return { voted: false }
+  const res = await db.collection(VOTES).where({ userId: user._id, projectId }).get()
+  return { voted: res.data.length > 0 }
+}
+
 async function toggleVote(openid, token, projectId) {
   const user = await resolveUser(openid, token)
   if (!user) return { code: 401, error: '请先登录' }
@@ -485,6 +492,14 @@ async function addAnnouncement(openid, token, content) {
   await logAdminAction(user._id, 'addAnnouncement', `发布公告：${content.slice(0, 30)}`)
   return { success: true }
 }
+async function updateAnnouncement(openid, token, id, content) {
+  const user = await resolveUser(openid, token)
+  if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
+  if (!content) return { code: 400, error: '请输入公告内容' }
+  await db.collection(ANNOUNCEMENTS).doc(id).update({ data: { content } })
+  await logAdminAction(user._id, 'updateAnnouncement', `更新公告：${content.slice(0, 30)}`)
+  return { success: true }
+}
 async function deleteAnnouncement(openid, token, id) {
   const user = await resolveUser(openid, token)
   if (!user || user.role !== 'ADMIN') return { code: 403, error: '无权限' }
@@ -524,6 +539,16 @@ async function getAdminLogs(openid, token) {
   return { logs: res.data }
 }
 
+// ============== Public Stats ==============
+async function getPublicStats() {
+  const [totalProjects, totalUsers, totalVotes] = await Promise.all([
+    db.collection(PROJECTS).count().catch(() => ({ total: 0 })),
+    db.collection(USERS).count().catch(() => ({ total: 0 })),
+    db.collection(VOTES).count().catch(() => ({ total: 0 })),
+  ])
+  return { totalProjects: totalProjects.total, totalUsers: totalUsers.total, totalVotes: totalVotes.total }
+}
+
 // 首次管理员设置：将当前登录用户设为管理员（仅首次使用）
 async function setupAdmin(openid, token) {
   const user = await resolveUser(openid, token)
@@ -553,6 +578,7 @@ exports.main = async (event, context) => {
     deleteProject: () => deleteProject(openid, params.token, params.id),
     getSuggestions: () => getSuggestions(params.q),
     toggleVote: () => toggleVote(openid, params.token, params.projectId),
+    getUserVote: () => getUserVote(openid, params.token, params.projectId),
     submitForReview: () => submitForReview(openid, params.token, params.id),
     approveProject: () => approveProject(openid, params.token, params.id),
     rejectProject: () => rejectProject(openid, params.token, params.id, params.reason),
@@ -569,10 +595,12 @@ exports.main = async (event, context) => {
     getAnnouncements: () => getAnnouncements(),
     addAnnouncement: () => addAnnouncement(openid, params.token, params.content),
     deleteAnnouncement: () => deleteAnnouncement(openid, params.token, params.id),
+    updateAnnouncement: () => updateAnnouncement(openid, params.token, params.id, params.content),
     createReport: () => createReport(openid, params.token, params.projectId, params.reason),
     getReports: () => getReports(openid, params.token),
     resolveReport: () => resolveReport(openid, params.token, params.id),
     getAdminLogs: () => getAdminLogs(openid, params.token),
+    getPublicStats: () => getPublicStats(),
     getNotifications: () => getNotifications(openid, params.token),
     markNotificationRead: () => markNotificationRead(openid, params.token, params.id),
     markAllRead: () => markAllRead(openid, params.token),

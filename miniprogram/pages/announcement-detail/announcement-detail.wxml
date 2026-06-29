@@ -1,0 +1,18 @@
+<view class="detail-page" wx:if="{{announcement}}">
+  <view class="ann-meta">
+    <text class="ann-date">{{announcement.createdAt?announcement.createdAt.substring(0,16).replace('T',' '):''}}</text>
+    <text class="ann-edit-btn" wx:if="{{app.globalData.user && app.globalData.user.role==='ADMIN' && !editing}}" bindtap="startEdit">编辑</text>
+  </view>
+
+  <block wx:if="{{!editing}}">
+    <view class="ann-content">{{announcement.content}}</view>
+  </block>
+
+  <block wx:if="{{editing}}">
+    <textarea class="edit-textarea" value="{{editContent}}" bindinput="onEditInput" style="min-height:200px"/>
+    <view class="edit-actions">
+      <view class="edit-btn cancel" bindtap="cancelEdit">取消</view>
+      <view class="edit-btn save" bindtap="saveEdit">保存</view>
+    </view>
+  </block>
+</view>

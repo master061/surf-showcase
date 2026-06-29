@@ -67,7 +67,17 @@ Page({
     })
   },
   deleteAnnouncement(e) {
-    callFunction('deleteAnnouncement', { id: e.currentTarget.dataset.id }).then(() => { this.loadAnnouncements() })
+    callFunction('deleteAnnouncement', { id: e.currentTarget.dataset.id }).then(() => {
+      wx.showToast({ title: '已删除', icon: 'success' }); this.loadAnnouncements()
+    }).catch(() => wx.showToast({ title: '删除失败', icon: 'none' }))
+  },
+  clearAllAnnouncements() {
+    wx.showModal({ title: '清空所有', content: '确定删除所有公告？', success: r => {
+      if (r.confirm) {
+        Promise.all(this.data.announcements.map(a => callFunction('deleteAnnouncement', { id: a._id }).catch(() => {})))
+          .then(() => { wx.showToast({ title: '已清空', icon: 'success' }); this.loadAnnouncements() })
+      }
+    }})
   },
   loadReports() {
     callFunction('getReports').then(r => {

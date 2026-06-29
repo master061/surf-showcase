@@ -51,9 +51,12 @@ Page({
   nextStep() {
     const d = this.data
     if (d.step === 1) {
-      if (!d.title || !d.abstract) { this.setData({ error: '项目名称和简介为必填项' }); return }
+      const missing = []
+      if (!d.title) missing.push('项目名称')
+      if (!d.abstract) missing.push('项目简介')
+      if (missing.length) { this.setData({ error: '请填写：' + missing.join('、') }); return }
     }
-    if (d.step === 2 && !d.contactInfo) { this.setData({ error: '联系方式为必填项' }); return }
+    if (d.step === 2 && !d.contactInfo) { this.setData({ error: '请填写联系方式' }); return }
     this.setData({ error: '', step: d.step + 1 })
   },
   prevStep() { this.setData({ error: '', step: this.data.step - 1 }) },

@@ -58,8 +58,15 @@
 
   <!-- ====== Announcements ====== -->
   <block wx:if="{{tab==='announce' && !loading}}">
-    <view class="section-pad"><view class="add-row"><input class="add-input" value="{{newAnnounce}}" bindinput="onAnnounceInput" placeholder="输入公告内容"/><view class="add-btn" bindtap="addAnnouncement">发布</view></view></view>
-    <view class="section-pad"><view class="announce-item" wx:for="{{announcements}}" wx:key="_id"><text class="announce-text">{{item.content}}</text><text class="announce-del" data-id="{{item._id}}" bindtap="deleteAnnouncement">✕</text></view></view>
+    <view class="section-pad">
+      <textarea class="announce-textarea" value="{{newAnnounce}}" bindinput="onAnnounceInput" placeholder="输入公告内容（支持多行）" style="min-height:80px"/>
+      <view class="add-row" style="margin-top:8px"><view class="add-btn" bindtap="addAnnouncement" style="margin-left:auto">发布</view></view>
+    </view>
+    <view class="section-pad" wx:if="{{announcements.length>0}}"><text class="clear-all" bindtap="clearAllAnnouncements">🗑️ 清空全部公告（共{{announcements.length}}条）</text></view>
+    <view class="section-pad"><view class="announce-item" wx:for="{{announcements}}" wx:key="_id">
+      <navigator url="/pages/announcement/announcement" class="announce-text">{{item.content}}</navigator>
+      <text class="announce-del" data-id="{{item._id}}" bindtap="deleteAnnouncement">删除</text>
+    </view></view>
   </block>
 
   <!-- ====== Reports ====== -->

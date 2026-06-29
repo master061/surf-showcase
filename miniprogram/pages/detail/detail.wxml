@@ -1,5 +1,8 @@
 <view class="detail-wrap" wx:if="{{!loading}}">
-  <view class="detail-header"><text class="detail-thumb">🔬</text></view>
+  <view class="detail-header">
+    <image class="detail-img" src="{{project.thumbnail}}" mode="aspectFill" wx:if="{{project.thumbnail}}"/>
+    <text class="detail-thumb" wx:else>🔬</text>
+  </view>
   <view class="detail-body">
     <view class="detail-main">
       <view class="badges-row">
@@ -35,7 +38,7 @@
       </view>
       <view class="action-row-detail">
         <view class="vote-btn {{voted?'voted':'not-voted'}}" bindtap="toggleVote">{{voted?'❤️ 已投票':'🤍 投票'}} · {{voteCount}}</view>
-        <view class="contact-btn" wx:if="{{project.status==='RECRUITING'}}">✉️ 联系发起人</view>
+        <view class="contact-btn" wx:if="{{project.status==='RECRUITING' && project.contactInfo}}" bindtap="contactOwner">✉️ 联系发起人</view>
       </view>
       <view class="owner-actions" wx:if="{{user && (project.userId===user._id || user.role==='ADMIN')}}">
         <view class="owner-btn edit" bindtap="goEdit">✏️ 编辑</view>

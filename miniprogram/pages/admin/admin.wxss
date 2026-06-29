@@ -46,6 +46,7 @@
 .section-pad{padding:12px 16px}
 .add-row{display:flex;gap:8px}
 .add-input{flex:1;padding:10px 12px;border:1.5px solid #e5e5ea;border-radius:10px;font-size:14px;background:#fff}
+.announce-textarea{width:100%;padding:12px;border:1.5px solid #e5e5ea;border-radius:10px;font-size:14px;background:#fff;font-family:inherit;box-sizing:border-box;resize:none}
 .add-btn{padding:10px 20px;background:#007aff;color:#fff;border-radius:10px;font-size:13px;font-weight:600}
 .field-chip{display:inline-flex;align-items:center;gap:6px;background:#fff;padding:8px 12px;border-radius:10px;margin:4px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
 .field-name{font-size:13px;color:#1d1d1f}
@@ -54,8 +55,9 @@
 
 /* Announcements */
 .announce-item{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-.announce-text{flex:1;font-size:13px;color:#1d1d1f;line-height:1.5}
-.announce-del{font-size:14px;color:#dc2626}
+.announce-text{flex:1;font-size:13px;color:#1d1d1f;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.announce-del{padding:6px 12px;border-radius:6px;font-size:11px;color:#dc2626;border:1px solid #fecaca;flex-shrink:0;margin-left:8px}
+.clear-all{display:block;text-align:center;padding:10px;font-size:12px;color:#dc2626;background:#fff;border-radius:10px;border:1px solid #fecaca}
 
 /* Reports */
 .report-item{background:#fff;border-radius:12px;padding:14px;margin:8px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}

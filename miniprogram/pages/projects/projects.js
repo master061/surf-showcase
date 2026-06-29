@@ -3,7 +3,7 @@ Page({
   data: { list:[], loading:true, search:'', fieldIdx:0, typeIdx:0, yearIdx:0, statusVal:'', sort:'newest',
     page:1, totalPages:1, fields, types, years, typeLabels, typeValues,
     statuses:[{label:'全部',value:''},{label:'✅ 已完成',value:'COMPLETED'},{label:'🔍 招人中',value:'RECRUITING'}],
-    suggestions:{titles:[],tags:[],studentNames:[],fields:[]}, showSug:false, sugTimer:null },
+    suggestions:{titles:[],tags:[],studentNames:[],fields:[]}, showSug:false, sugTimer:null, searchFocused:false, },
   onLoad(params){
     const app = getApp()
     callFunction('getFields').then(r => {
@@ -51,8 +51,12 @@ Page({
       this.setData({list:r.projects,page:r.page,totalPages:r.totalPages,loading:false})
     }).catch(()=>this.setData({loading:false}))
   },
+  onPullDownRefresh(){
+    this.fetchList(this.data.page)
+    setTimeout(() => wx.stopPullDownRefresh(), 1000)
+  },
   onSearchInput(e){
-    const v=e.detail.value;this.setData({search:v})
+    const v=e.detail.value;this.setData({search:v,searchFocused:true})
     if(v.length>=1){
       clearTimeout(this.data.sugTimer)
       const t=setTimeout(()=>{callFunction('getSuggestions',{q:v}).then(s=>this.setData({suggestions:s,showSug:true})).catch(()=>{})},300)
@@ -60,6 +64,8 @@ Page({
     }else{this.setData({showSug:false,suggestions:{titles:[],tags:[],studentNames:[],fields:[]}})}
   },
   onSearchConfirm(){this.setData({showSug:false});this.fetchList(1)},
+  clearSearch(){this.setData({search:'',showSug:false,suggestions:{titles:[],tags:[],studentNames:[],fields:[]},searchFocused:false});this.fetchList(1)},
+  onFieldTap(e){this.setData({fieldIdx:Number(e.currentTarget.dataset.idx)});this.fetchList(1)},
   onSugClick(e){this.setData({search:e.currentTarget.dataset.value,showSug:false});this.fetchList(1)},
   onStatusTap(e){this.setData({statusVal:e.currentTarget.dataset.value});this.fetchList(1)},
   onFieldTap(e){

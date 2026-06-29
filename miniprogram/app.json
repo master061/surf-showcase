@@ -13,7 +13,9 @@
     "pages/admin-review/admin-review",
     "pages/admin-users/admin-users",
     "pages/notifications/notifications",
-    "pages/admin/admin"
+    "pages/admin/admin",
+    "pages/announcement/announcement",
+    "pages/announcement-detail/announcement-detail"
   ],
   "window": {
     "navigationBarTitleText": "SURF 科研展示",
