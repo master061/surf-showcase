@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { api, type Project } from '../../api'
 import { useAuth } from '../../components/AuthStore'
+import PosterCanvas from '../../components/PosterCanvas'
 
 export default function Dashboard() {
   const { user, checkLogin, logout } = useAuth()
   const [list, setList] = useState<Project[]>([])
   const [favList, setFavList] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
+  const [posterProject, setPosterProject] = useState<Project | null>(null)
 
   const fetchData = () => {
     if (!checkLogin()) return
@@ -115,6 +117,7 @@ export default function Dashboard() {
                 </View>
               </View>
               <View className="flex" style={{ gap: 6, marginLeft: 12, flexShrink: 0 }}>
+                <View className="btn btn-outline btn-xs" style={{ borderRadius: 6, background: '#fefce8', color: '#a16207', border: '1px solid #fde68a' }} onClick={() => setPosterProject(p)}>海报</View>
                 <Navigator url={`/pages/edit/index?id=${p.id}`} className="btn btn-outline btn-xs" style={{ borderRadius: 6 }}>编辑</Navigator>
                 <Navigator url={`/pages/detail/index?id=${p.id}`} className="btn btn-primary btn-xs" style={{ borderRadius: 6 }}>查看</Navigator>
               </View>
@@ -160,6 +163,11 @@ export default function Dashboard() {
           </View>
         )}
       </View>
+
+      {/* Poster modal */}
+      {posterProject && (
+        <PosterCanvas project={posterProject} onClose={() => setPosterProject(null)} />
+      )}
 
       {/* Logout */}
       <View style={{ marginTop: 28, textAlign: 'center', paddingBottom: 12 }}>
