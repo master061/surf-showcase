@@ -1,0 +1,20 @@
+<view class="profile-page" wx:if="{{user}}">
+  <view class="profile-card">
+    <view class="avatar">{{user.name?user.name[0]:'?'}}</view>
+    <text class="name">{{user.name}}</text>
+    <text class="institution">{{user.institution||'未填写'}}</text>
+  </view>
+
+  <view class="info-section">
+    <view class="info-item">
+      <text class="info-label">📞 联系方式</text>
+      <text class="info-value">{{user.contactInfo}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">📄 相关项目</text>
+      <text class="info-value">{{user.projectTitle}}</text>
+    </view>
+  </view>
+
+  <button class="contact-btn" bindtap="copyContact">复制联系方式</button>
+</view>

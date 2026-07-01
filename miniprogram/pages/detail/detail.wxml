@@ -22,8 +22,16 @@
         <view class="recruit-cell" wx:if="{{project.recruitCount}}"><text class="rc-num">{{project.recruitCount}}</text><text class="rc-lbl">招募人数</text></view>
         <view class="recruit-cell" wx:if="{{project.expectedDuration}}"><text class="rc-dur">{{project.expectedDuration}}</text><text class="rc-lbl">预期周期</text></view>
       </view>
-      <view class="detail-section"><text class="ds-title">📝 项目简介</text><text class="ds-body">{{project.abstract}}</text></view>
-      <view class="detail-section" wx:if="{{project.content}}"><text class="ds-title">📈 研究成果</text><text class="ds-body">{{project.content}}</text></view>
+      <view class="detail-section">
+        <text class="ds-title">📝 项目简介</text>
+        <text class="ds-body {{expandedAbstract?'':'clamped'}}">{{project.abstract}}</text>
+        <text class="expand-btn" bindtap="toggleAbstract">{{expandedAbstract?'收起 ▲':'展开 ▼'}}</text>
+      </view>
+      <view class="detail-section" wx:if="{{project.content}}">
+        <text class="ds-title">📈 研究成果</text>
+        <text class="ds-body {{expandedContent?'':'clamped'}}">{{project.content}}</text>
+        <text class="expand-btn" bindtap="toggleContent">{{expandedContent?'收起 ▲':'展开 ▼'}}</text>
+      </view>
       <view class="detail-section" wx:if="{{project.advisor}}"><text class="ds-title">👨‍🏫 指导老师</text><text class="ds-body">{{project.advisor}}</text></view>
       <view class="detail-section" wx:if="{{project.status==='RECRUITING' && project.recruitRequirements}}">
         <text class="ds-title">🎯 招募要求</text><text class="ds-body">{{project.recruitRequirements}}</text>

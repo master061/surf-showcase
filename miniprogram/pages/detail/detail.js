@@ -1,7 +1,7 @@
 const { callFunction, typeLabels, formatDate, parseTags } = require('../../utils/api')
 const app = getApp()
 Page({
-  data: { project: null, loading: true, voted: false, voteCount: 0, tags: [], typeLabels, user: null },
+  data: { project: null, loading: true, voted: false, voteCount: 0, tags: [], typeLabels, user: null, expandedAbstract: false, expandedContent: false },
   onLoad(params) {
     this.setData({ user: app.globalData.user })
     if (!params.id) return
@@ -33,11 +33,18 @@ Page({
       },
     })
   },
+  toggleAbstract() { this.setData({ expandedAbstract: !this.data.expandedAbstract }) },
+  toggleContent() { this.setData({ expandedContent: !this.data.expandedContent }) },
   contactOwner() {
-    const info = this.data.project.contactInfo
-    if (info) {
-      wx.setClipboardData({ data: info, success: () => wx.showToast({ title: '已复制联系方式', icon: 'success' }) })
+    const p = this.data.project
+    const app = getApp()
+    app.globalData.viewUser = {
+      name: p.studentName,
+      institution: p.institution,
+      contactInfo: p.contactInfo || '未提供',
+      projectTitle: p.title,
     }
+    wx.navigateTo({ url: '/pages/user-profile/user-profile' })
   },
   reportProject() {
     wx.showModal({

@@ -22,6 +22,9 @@
 .detail-section{margin-bottom:16px}
 .ds-title{font-size:15px;font-weight:700;color:#1d1d1f;margin-bottom:8px;display:block}
 .ds-body{font-size:14px;color:#515154;line-height:1.8;display:block}
+.ds-body.clamped{max-height:100px;overflow:hidden;position:relative}
+.ds-body.clamped::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(transparent,#fff)}
+.expand-btn{display:inline-block;margin-top:6px;font-size:12px;color:#007aff;font-weight:500;padding:2px 0}
 .ds-body.link{color:#007aff}
 .contact-box{background:#f5f5f7;border-radius:8px;padding:10px;margin-top:8px;font-size:13px;color:#6b7280}
 .tags-row{display:flex;flex-wrap:wrap;gap:6px}
