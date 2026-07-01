@@ -140,15 +140,18 @@ export default function Index() {
 
       {/* Hot Projects */}
       {hotProjects.length > 0 && (
-        <View style={{ padding: '0 16px', marginBottom: 16 }}>
-          <View className="flex items-center justify-between" style={{ marginBottom: 12 }}>
-            <Text style={{ fontSize: 16, fontWeight: 600, color: '#111827' }}>热门项目</Text>
+        <View style={{ padding: '0 16px', marginBottom: 18 }}>
+          <View style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
+            <View style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <View style={{ width: 3, height: 16, borderRadius: 2, background: '#F59E0B' }} />
+              <Text style={{ fontSize: 17, fontWeight: 700, color: '#0F172A' }}>热门项目</Text>
+            </View>
             <Navigator
               openType="switchTab"
               url="/pages/projects/index"
               onClick={() => setProjectFilter({ sort: 'hot' })}
-              style={{ fontSize: 12, color: '#1e40af' }}
-            >查看更多</Navigator>
+              style={{ fontSize: 13, color: '#2563EB', fontWeight: 500 }}
+            >查看全部 →</Navigator>
           </View>
           {hotProjects.map(p => <ProjectCard key={p.id} project={p} />)}
         </View>
@@ -157,14 +160,17 @@ export default function Index() {
       {/* Latest Projects */}
       {latestProjects.length > 0 && (
         <View style={{ padding: '0 16px' }}>
-          <View className="flex items-center justify-between" style={{ marginBottom: 12 }}>
-            <Text style={{ fontSize: 16, fontWeight: 600, color: '#111827' }}>最新发布</Text>
+          <View style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
+            <View style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <View style={{ width: 3, height: 16, borderRadius: 2, background: '#2563EB' }} />
+              <Text style={{ fontSize: 17, fontWeight: 700, color: '#0F172A' }}>最新发布</Text>
+            </View>
             <Navigator
               openType="switchTab"
               url="/pages/projects/index"
               onClick={() => setProjectFilter(null)}
-              style={{ fontSize: 12, color: '#1e40af' }}
-            >查看更多</Navigator>
+              style={{ fontSize: 13, color: '#2563EB', fontWeight: 500 }}
+            >查看全部 →</Navigator>
           </View>
           {latestProjects.map(p => <ProjectCard key={p.id} project={p} />)}
         </View>
