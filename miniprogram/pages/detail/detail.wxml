@@ -52,6 +52,7 @@
         <view class="owner-btn edit" bindtap="goEdit">✏️ 编辑</view>
         <view class="owner-btn delete" bindtap="deleteProject">🗑️ 删除</view>
       </view>
+      <view class="poster-action" bindtap="generatePoster">🎨 生成海报</view>
       <view class="report-action" bindtap="reportProject" wx:if="{{user && project.userId!==user._id}}">🚨 举报</view>
     </view>
   </view>

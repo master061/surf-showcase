@@ -33,6 +33,11 @@ Page({
       },
     })
   },
+  generatePoster() {
+    const app = getApp()
+    app.globalData.posterProject = this.data.project
+    wx.navigateTo({ url: '/pages/poster/poster' })
+  },
   toggleAbstract() { this.setData({ expandedAbstract: !this.data.expandedAbstract }) },
   toggleContent() { this.setData({ expandedContent: !this.data.expandedContent }) },
   contactOwner() {

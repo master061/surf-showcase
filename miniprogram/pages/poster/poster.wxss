@@ -1,0 +1,12 @@
+.poster-page{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);display:flex;flex-direction:column;z-index:9999}
+.close-btn{position:absolute;top:48px;right:20px;width:36px;height:36px;border-radius:18px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;z-index:10}
+.hidden-canvas{position:fixed;top:-9999px;left:-9999px;width:375px;height:600px}
+.loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.loading-icon{font-size:40px}
+.loading-text{font-size:14px;color:rgba(255,255,255,0.7)}
+.preview-area{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px 20px}
+.poster-img{width:90%;max-width:340px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.action-bar{display:flex;gap:12px;padding:16px 20px 40px}
+.action-btn{flex:1;text-align:center;padding:14px 0;border-radius:14px;font-size:15px;font-weight:600}
+.action-btn.primary{background:#007aff;color:#fff;border:none}
+.action-btn.secondary{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.2)}
