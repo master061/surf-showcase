@@ -1,10 +1,8 @@
 node_modules/
-server/node_modules/
-dist/
-.taro/
-.next/
-server/.next/
-.cache/
+cloudfunctions/*/node_modules/
+.miniprogram/
+.tea/
 *.log
 .DS_Store
 *.db
+project.private.config.json

@@ -1,0 +1,10 @@
+.detail-page{padding:20px 16px;min-height:100vh;background:#fff}
+.ann-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #f0f0f0}
+.ann-date{font-size:13px;color:#86868b}
+.ann-edit-btn{padding:6px 14px;border-radius:8px;font-size:12px;color:#007aff;border:1px solid rgba(0,122,255,0.2)}
+.ann-content{font-size:16px;color:#1d1d1f;line-height:1.8;white-space:pre-wrap;word-wrap:break-word}
+.edit-textarea{width:100%;padding:16px;border:1.5px solid #e5e5ea;border-radius:14px;font-size:16px;line-height:1.8;background:#fff;font-family:inherit;box-sizing:border-box;resize:none}
+.edit-actions{display:flex;gap:10px;margin-top:16px}
+.edit-btn{flex:1;text-align:center;padding:14px 0;border-radius:12px;font-size:16px;font-weight:600}
+.edit-btn.cancel{background:#f5f5f7;color:#515154}
+.edit-btn.save{background:#007aff;color:#fff}

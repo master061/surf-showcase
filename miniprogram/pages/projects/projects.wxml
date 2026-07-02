@@ -1,0 +1,60 @@
+<view class="pg">
+  <view class="header">
+    <text class="serif title-xl">项目</text>
+  </view>
+
+  <view class="search-bar">
+    <text class="search-icon">🔍</text>
+    <input class="search-input" placeholder="搜索项目、标签、作者..." placeholder-class="placeholder" value="{{search}}" bindinput="onSearchInput" bindconfirm="onSearchConfirm" focus="{{searchFocused}}"/>
+    <text class="search-cancel" wx:if="{{search||showSug}}" bindtap="clearSearch">取消</text>
+  </view>
+
+  <view class="suggestions" wx:if="{{showSug && (suggestions.titles.length>0||suggestions.tags.length>0)}}">
+    <view wx:if="{{suggestions.titles.length>0}}">
+      <text class="sg-label">项目标题</text>
+      <text class="sg-item" wx:for="{{suggestions.titles}}" wx:key="*this" bindtap="onSugClick" data-value="{{item}}">{{item}}</text>
+    </view>
+    <view wx:if="{{suggestions.tags.length>0}}">
+      <text class="sg-label">标签</text>
+      <view class="sg-tags">
+        <text class="tag-chip" wx:for="{{suggestions.tags}}" wx:key="*this" bindtap="onSugClick" data-value="{{item}}">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="tabs">
+    <view class="tab {{statusVal===''?'active':''}}" bindtap="onStatusTap" data-value="">全部项目</view>
+    <view class="tab {{statusVal==='RECRUITING'?'active':''}}" bindtap="onStatusTap" data-value="RECRUITING">正在招人</view>
+  </view>
+
+  <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="chip {{fieldIdx===i?'active':''}}" wx:for="{{fields}}" wx:for-index="i" wx:key="*this" bindtap="onFieldTap" data-idx="{{i}}">{{item}}</view>
+  </scroll-view>
+
+  <view class="sort-row">
+    <view class="pill-btn {{sort==='newest'?'primary':'ghost'}}" data-sort="newest" bindtap="setSort">最新发布</view>
+    <view class="pill-btn {{sort==='hot'?'primary':'ghost'}}" data-sort="hot" bindtap="setSort">最多投票</view>
+  </view>
+
+  <view class="section">
+    <view wx:if="{{loading}}">
+      <view class="skeleton" style="height:400rpx;margin-bottom:24rpx;border-radius:32rpx" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+    </view>
+    <view wx:elif="{{list.length===0}}" class="empty-state">
+      <text class="empty-state-icon">{{search?'🔍':'📭'}}</text>
+      <text class="empty-state-text">{{search?'未找到相关项目':'暂无项目'}}</text>
+      <text class="empty-state-sub" wx:if="{{search}}">试试其他关键词或调整筛选条件</text>
+    </view>
+    <view wx:else>
+      <project-card wx:for="{{list}}" wx:key="_id" project="{{item}}"/>
+    </view>
+
+    <view class="pagination" wx:if="{{totalPages>1}}">
+      <text class="page-btn" bindtap="prevPage" style="{{page<=1?'opacity:0.4':''}}">上一页</text>
+      <text class="page-info">{{page}}/{{totalPages}}</text>
+      <text class="page-btn" bindtap="nextPage" style="{{page>=totalPages?'opacity:0.4':''}}">下一页</text>
+    </view>
+  </view>
+
+  <view style="height:120rpx"></view>
+</view>

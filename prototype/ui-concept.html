@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SURF 概念设计 — 文艺极简风</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    background:#E5E5E5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    display:flex; justify-content:center; padding:20px 0;
+  }
+  .phone {
+    width:375px; height:812px; background:#F7F6F2; border-radius:40px;
+    box-shadow:0 25px 80px rgba(0,0,0,0.25); overflow:hidden; position:relative;
+    display:flex; flex-direction:column;
+  }
+  .screen { flex:1; overflow-y:auto; padding:0 0 80px; }
+  .screen::-webkit-scrollbar { display:none; }
+
+  /* Typography */
+  .serif { font-family: Georgia, "Times New Roman", "Songti SC", serif; font-weight:600; letter-spacing:-0.02em; }
+  .title-xl { font-size:32px; line-height:1.1; color:#1A1A1A; }
+  .title-lg { font-size:24px; line-height:1.2; color:#1A1A1A; }
+  .title-md { font-size:18px; font-weight:600; color:#1A1A1A; }
+  .body { font-size:14px; color:#4A4A4A; line-height:1.6; }
+  .caption { font-size:12px; color:#8A8A8A; }
+
+  /* Components */
+  .pill-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:10px 22px; border-radius:999px; font-size:14px; font-weight:600;
+    border:none; cursor:pointer;
+  }
+  .pill-btn.primary { background:#5A6B3A; color:#fff; }
+  .pill-btn.outline { background:transparent; border:1.5px solid #1A1A1A; color:#1A1A1A; }
+  .pill-btn.ghost { background:#EFEEE9; color:#1A1A1A; }
+
+  .card {
+    background:#fff; border-radius:28px;
+    box-shadow:0 2px 12px rgba(0,0,0,0.04);
+  }
+
+  /* Header */
+  .header {
+    padding:56px 24px 12px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .header .greeting { font-size:14px; color:#6B6B6B; }
+
+  /* Hero */
+  .hero {
+    margin:0 20px; padding:28px; border-radius:32px;
+    background:#fff; position:relative; overflow:hidden;
+    box-shadow:0 2px 12px rgba(0,0,0,0.04);
+  }
+  .hero .serif { margin-bottom:8px; }
+  .hero .sub { font-size:13px; color:#6B6B6B; margin-bottom:20px; }
+  .stats-row { display:flex; gap:10px; margin-bottom:20px; }
+  .stat-chip {
+    flex:1; background:#F7F6F2; border-radius:20px; padding:14px 8px; text-align:center;
+  }
+  .stat-chip .num { font-size:20px; font-weight:700; color:#5A6B3A; display:block; }
+  .stat-chip .lbl { font-size:11px; color:#8A8A8A; margin-top:4px; display:block; }
+  .hero-actions { display:flex; gap:10px; }
+
+  /* Announcement bar */
+  .announce {
+    margin:16px 20px; padding:14px 18px; border-radius:20px;
+    background:#EFEEE9; display:flex; align-items:center; gap:10px;
+  }
+  .announce-text { flex:1; font-size:13px; color:#4A4A4A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .announce-more { font-size:12px; color:#5A6B3A; font-weight:600; white-space:nowrap; }
+
+  /* Section */
+  .section { margin-top:28px; padding:0 20px; }
+  .sec-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; }
+  .sec-header .serif { font-size:22px; }
+  .sec-header .more { font-size:13px; color:#6B6B6B; }
+
+  /* Field Grid */
+  .field-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin:0 20px; }
+  .field-item {
+    background:#fff; border-radius:24px; padding:16px 4px; text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.03);
+  }
+  .field-icon { font-size:24px; display:block; margin-bottom:6px; }
+  .field-name { font-size:11px; color:#4A4A4A; font-weight:500; }
+
+  /* Project Cards */
+  .project-card {
+    background:#fff; border-radius:28px; overflow:hidden;
+    margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.04);
+  }
+  .project-card .cover {
+    width:100%; height:180px; object-fit:cover; display:block;
+  }
+  .project-card .body { padding:16px; }
+  .project-card .badges { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+  .badge {
+    display:inline-block; padding:4px 12px; border-radius:999px;
+    font-size:11px; font-weight:600;
+  }
+  .badge.olive { background:#E8EDDE; color:#5A6B3A; }
+  .badge.blue { background:#E6F4F7; color:#2AAECF; }
+  .badge.gray { background:#F2F2F0; color:#6B6B6B; }
+  .project-card .title { font-size:16px; font-weight:700; color:#1A1A1A; margin-bottom:6px; }
+  .project-card .meta { font-size:12px; color:#8A8A8A; }
+  .project-card .footer { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+  .vote-pill {
+    display:flex; align-items:center; gap:4px;
+    background:#F7F6F2; padding:6px 14px; border-radius:999px;
+    font-size:12px; font-weight:600; color:#1A1A1A;
+  }
+
+  /* Detail Page Styles */
+  .detail-hero {
+    position:relative; width:100%; height:280px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius:0 0 32px 32px; overflow:hidden;
+  }
+  .detail-hero img { width:100%; height:100%; object-fit:cover; opacity:0.6; }
+  .detail-hero .back {
+    position:absolute; top:56px; left:20px; width:36px; height:36px;
+    background:rgba(255,255,255,0.2); backdrop-filter:blur(10px);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:18px;
+  }
+  .detail-body {
+    margin:-40px 16px 0; background:#fff; border-radius:32px;
+    padding:24px; position:relative; z-index:2;
+    box-shadow:0 4px 20px rgba(0,0,0,0.06);
+  }
+  .detail-body .badges { margin-bottom:12px; }
+  .detail-body .title { font-size:22px; font-weight:700; margin-bottom:12px; line-height:1.3; }
+  .author-row { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+  .author-avatar {
+    width:44px; height:44px; border-radius:50%; background:#5A6B3A;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:16px; font-weight:700;
+  }
+  .author-info { flex:1; }
+  .author-name { font-size:15px; font-weight:600; }
+  .author-school { font-size:12px; color:#8A8A8A; }
+  .vote-box { text-align:center; }
+  .vote-num { font-size:20px; font-weight:800; color:#D4A017; display:block; }
+  .vote-lbl { font-size:10px; color:#8A8A8A; }
+  .content-section { margin-bottom:20px; }
+  .content-section .label { font-size:12px; font-weight:700; color:#8A8A8A; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; }
+  .content-section .text { font-size:14px; color:#4A4A4A; line-height:1.7; }
+  .action-bar {
+    position:fixed; bottom:0; left:0; right:0; background:#fff;
+    padding:12px 20px 28px; display:flex; gap:12px;
+    border-radius:24px 24px 0 0;
+    box-shadow:0 -4px 20px rgba(0,0,0,0.06);
+  }
+  .action-bar .pill-btn { flex:1; justify-content:center; height:48px; font-size:15px; }
+
+  /* Tab Bar */
+  .tabbar {
+    position:absolute; bottom:0; left:0; right:0; height:84px;
+    background:#fff; border-radius:24px 24px 0 0;
+    display:flex; justify-content:space-around; align-items:flex-start;
+    padding-top:10px;
+    box-shadow:0 -4px 24px rgba(0,0,0,0.08);
+    z-index:10;
+  }
+  .tab-item { display:flex; flex-direction:column; align-items:center; gap:4px; padding:4px 12px; }
+  .tab-item .icon {
+    width:24px; height:24px; stroke:#8A8A8A; stroke-width:1.8; fill:none;
+  }
+  .tab-item.active .icon { stroke:#1A1A1A; }
+  .tab-item .label { font-size:10px; color:#8A8A8A; }
+  .tab-item.active .label { color:#1A1A1A; font-weight:600; }
+
+  /* Tab switcher */
+  .tabs { display:flex; gap:16px; padding:0 20px; margin-bottom:16px; border-bottom:1px solid #EFEEE9; }
+  .tab { padding-bottom:10px; font-size:15px; color:#8A8A8A; position:relative; }
+  .tab.active { color:#1A1A1A; font-weight:600; }
+  .tab.active::after {
+    content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+    background:#1A1A1A; border-radius:2px;
+  }
+
+  /* Horizontal scroll chips */
+  .chips { display:flex; gap:8px; overflow-x:auto; padding:0 20px 12px; }
+  .chips::-webkit-scrollbar { display:none; }
+
+  /* Nav dot */
+  .nav-dot { position:absolute; top:52px; right:20px; }
+  .nav-dot .dot { width:8px; height:8px; background:#5A6B3A; border-radius:50%; }
+
+  /* Utilities */
+  .mb-2 { margin-bottom:8px; }
+  .mt-1 { margin-top:4px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+
+<!-- Phone Frame -->
+<div class="phone">
+
+  <!-- ===================== SCREEN 1: HOME ===================== -->
+  <div class="screen" id="screen-home">
+    <div class="header">
+      <div>
+        <div class="greeting">👋 欢迎回来，张明</div>
+        <div class="serif title-xl" style="font-size:28px; margin-top:4px;">SURF</div>
+      </div>
+      <div style="display:flex; gap:16px; align-items:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <div style="position:relative;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span style="position:absolute; top:-2px; right:-2px; width:8px; height:8px; background:#D4A017; border-radius:50%; border:2px solid #F7F6F2;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Card -->
+    <div class="hero">
+      <div class="serif title-lg">科研展示</div>
+      <div class="sub">探索本科生优秀科研成果与创新灵感</div>
+      <div class="stats-row">
+        <div class="stat-chip"><span class="num">128</span><span class="lbl">项目</span></div>
+        <div class="stat-chip"><span class="num">16</span><span class="lbl">招人中</span></div>
+        <div class="stat-chip"><span class="num">342</span><span class="lbl">用户</span></div>
+        <div class="stat-chip"><span class="num">1.2k</span><span class="lbl">获票</span></div>
+      </div>
+      <div class="hero-actions">
+        <button class="pill-btn primary">🔍 浏览项目</button>
+        <button class="pill-btn ghost">🚀 发布项目</button>
+      </div>
+    </div>
+
+    <!-- Announcement -->
+    <div class="announce">
+      <span>📢</span>
+      <span class="announce-text">2025 SURF 成果展报名已开启，快来提交你的项目吧！</span>
+      <span class="announce-more">详情 →</span>
+    </div>
+
+    <!-- Fields -->
+    <div class="section">
+      <div class="sec-header">
+        <span class="serif">研究领域</span>
+        <span class="more">全部 →</span>
+      </div>
+    </div>
+    <div class="field-grid">
+      <div class="field-item"><span class="field-icon">💻</span><span class="field-name">计算机</span></div>
+      <div class="field-item"><span class="field-icon">🤖</span><span class="field-name">人工智能</span></div>
+      <div class="field-item"><span class="field-icon">🧬</span><span class="field-name">生物医药</span></div>
+      <div class="field-item"><span class="field-icon">📐</span><span class="field-name">物理数学</span></div>
+      <div class="field-item"><span class="field-icon">🧪</span><span class="field-name">化学材料</span></div>
+      <div class="field-item"><span class="field-icon">⚙️</span><span class="field-name">工程技术</span></div>
+      <div class="field-item"><span class="field-icon">🏛️</span><span class="field-name">社会科学</span></div>
+      <div class="field-item"><span class="field-icon">🎨</span><span class="field-name">人文艺术</span></div>
+    </div>
+
+    <!-- Hot Projects -->
+    <div class="section">
+      <div class="sec-header">
+        <span class="serif">热门推荐</span>
+        <span class="more">更多 →</span>
+      </div>
+    </div>
+    <div style="padding:0 20px;">
+      <div class="project-card">
+        <img class="cover" src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&h=300&fit=crop" alt="cover">
+        <div class="body">
+          <div class="badges">
+            <span class="badge olive">✅ 已完成</span>
+            <span class="badge blue">人工智能</span>
+            <span class="badge gray">2025</span>
+          </div>
+          <div class="title">基于深度学习的医学影像分割系统</div>
+          <div class="meta">李思远 · 北京大学 · 团队项目</div>
+          <div class="footer">
+            <div style="display:flex; gap:6px;">
+              <span class="badge gray" style="font-size:10px; padding:3px 10px;">🏷️ 深度学习</span>
+              <span class="badge gray" style="font-size:10px; padding:3px 10px;">🏷️ 医疗AI</span>
+            </div>
+            <div class="vote-pill">❤️ 86</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <img class="cover" src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=600&h=300&fit=crop" alt="cover">
+        <div class="body">
+          <div class="badges">
+            <span class="badge olive" style="background:#FFF8E1; color:#B8860B;">🔍 招人中</span>
+            <span class="badge blue">生物医药</span>
+          </div>
+          <div class="title">新型纳米药物载体的构建与表征</div>
+          <div class="meta">王婉清 · 复旦大学 · 个人项目</div>
+          <div class="footer">
+            <div style="display:flex; gap:6px;">
+              <span class="badge gray" style="font-size:10px; padding:3px 10px;">🏷️ 纳米技术</span>
+            </div>
+            <div class="vote-pill">❤️ 42</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div>
+
+  <!-- ===================== SCREEN 2: CLUBS / PROJECTS ===================== -->
+  <div class="screen hidden" id="screen-clubs">
+    <div class="header" style="padding-bottom:0;">
+      <div class="serif title-xl" style="font-size:28px;">项目</div>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    </div>
+
+    <div class="tabs" style="margin-top:16px;">
+      <div class="tab active">全部项目</div>
+      <div class="tab">正在招人</div>
+    </div>
+
+    <div class="chips" style="margin-top:8px;">
+      <button class="pill-btn outline" style="font-size:13px; padding:6px 16px; flex-shrink:0;">Featured</button>
+      <button class="pill-btn ghost" style="font-size:13px; padding:6px 16px; flex-shrink:0;">人工智能</button>
+      <button class="pill-btn ghost" style="font-size:13px; padding:6px 16px; flex-shrink:0;">生物医药</button>
+      <button class="pill-btn ghost" style="font-size:13px; padding:6px 16px; flex-shrink:0;">工程技术 ▾</button>
+    </div>
+
+    <div style="padding:8px 20px 0;">
+      <div class="project-card">
+        <img class="cover" src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=260&fit=crop" alt="cover">
+        <div class="body">
+          <div class="badges">
+            <span class="badge olive">✅ 已完成</span>
+            <span class="badge blue">工程技术</span>
+          </div>
+          <div class="title">低成本水下机器人设计与控制</div>
+          <div class="meta">陈浩然 · 浙江大学</div>
+          <div class="footer">
+            <span class="caption">👥 3人团队 · 6个月周期</span>
+            <div class="vote-pill">❤️ 128</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px;">
+        <div class="card" style="flex:1; overflow:hidden;">
+          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop" style="width:100%; height:120px; object-fit:cover; display:block;">
+          <div style="padding:14px;">
+            <div class="badge olive" style="font-size:10px; margin-bottom:6px;">🔍 招人中</div>
+            <div style="font-size:14px; font-weight:700; margin-bottom:4px;">量子计算入门</div>
+            <div class="caption">2.2k 关注 · 5 posts a day</div>
+          </div>
+        </div>
+        <div class="card" style="flex:1; overflow:hidden;">
+          <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=200&fit=crop" style="width:100%; height:120px; object-fit:cover; display:block;">
+          <div style="padding:14px;">
+            <div class="badge olive" style="font-size:10px; margin-bottom:6px;">✅ 已完成</div>
+            <div style="font-size:14px; font-weight:700; margin-bottom:4px;">Web 3.0 社交平台</div>
+            <div class="caption">1.0k 关注</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:20px"></div>
+  </div>
+
+  <!-- ===================== SCREEN 3: DETAIL ===================== -->
+  <div class="screen hidden" id="screen-detail">
+    <div class="detail-hero">
+      <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&h=400&fit=crop" alt="cover">
+      <div class="back" onclick="goHome()">‹</div>
+    </div>
+
+    <div class="detail-body">
+      <div class="badges">
+        <span class="badge olive">✅ 已完成</span>
+        <span class="badge blue">人工智能</span>
+        <span class="badge gray">2025</span>
+        <span class="badge gray">团队项目</span>
+      </div>
+      <div class="title" style="font-size:22px; font-weight:700; margin-bottom:12px;">基于深度学习的医学影像分割系统</div>
+
+      <div class="author-row">
+        <div class="author-avatar">李</div>
+        <div class="author-info">
+          <div class="author-name">李思远</div>
+          <div class="author-school">北京大学 · 2025级</div>
+        </div>
+        <div class="vote-box">
+          <span class="vote-num">86</span>
+          <span class="vote-lbl">票</span>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="label">项目简介</div>
+        <div class="text">本项目提出了一种基于改进 U-Net 架构的医学影像分割方法，通过引入注意力机制显著提升了小目标区域的分割精度。实验结果表明，在公开数据集上的 Dice 系数达到了 0.917。</div>
+      </div>
+
+      <div class="content-section">
+        <div class="label">研究成果</div>
+        <div class="text">已发表 SCI 论文一篇，申请发明专利一项。系统原型已在某三甲医院放射科进行初步验证。</div>
+      </div>
+
+      <div class="content-section">
+        <div class="label">指导老师</div>
+        <div class="text">张伟教授 · 北京大学医学部</div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:80px;">
+        <span class="badge gray" style="font-size:12px;">🏷️ 深度学习</span>
+        <span class="badge gray" style="font-size:12px;">🏷️ 医学影像</span>
+        <span class="badge gray" style="font-size:12px;">🏷️ U-Net</span>
+        <span class="badge gray" style="font-size:12px;">🏷️ Python</span>
+      </div>
+    </div>
+
+    <!-- Fixed Action Bar -->
+    <div class="action-bar">
+      <button class="pill-btn outline">🤍 投票</button>
+      <button class="pill-btn primary">✉️ 联系作者</button>
+    </div>
+  </div>
+
+  <!-- ===================== TAB BAR ===================== -->
+  <div class="tabbar">
+    <div class="tab-item active" onclick="switchTab('home')">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="label">首页</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('clubs')">
+      <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span class="label">项目</span>
+    </div>
+    <div class="tab-item">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      <span class="label">探索</span>
+    </div>
+    <div class="tab-item">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      <span class="label">收藏</span>
+    </div>
+    <div class="tab-item">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="label">我的</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function hideAll() {
+    document.getElementById('screen-home').classList.add('hidden');
+    document.getElementById('screen-clubs').classList.add('hidden');
+    document.getElementById('screen-detail').classList.add('hidden');
+    document.querySelector('.tabbar').style.display = 'flex';
+    document.querySelectorAll('.action-bar').forEach(el => el.style.display = 'none');
+  }
+  function switchTab(name) {
+    hideAll();
+    if (name === 'home') {
+      document.getElementById('screen-home').classList.remove('hidden');
+    } else if (name === 'clubs') {
+      document.getElementById('screen-clubs').classList.remove('hidden');
+    }
+    document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+  function goHome() {
+    hideAll();
+    document.getElementById('screen-home').classList.remove('hidden');
+    document.querySelector('.tabbar').style.display = 'flex';
+  }
+  // Click cards to open detail
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('click', () => {
+      hideAll();
+      document.getElementById('screen-detail').classList.remove('hidden');
+      document.querySelector('.tabbar').style.display = 'none';
+      document.querySelector('.action-bar').style.display = 'flex';
+    });
+  });
+</script>
+
+</body>
+</html>

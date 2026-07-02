@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/projects/projects",
+    "pages/explore/explore",
+    "pages/favorites/favorites",
+    "pages/detail/detail",
+    "pages/create/create",
+    "pages/edit/edit",
+    "pages/dashboard/dashboard",
+    "pages/login/login",
+    "pages/register/register",
+    "pages/complete-info/complete-info",
+    "pages/profile/profile",
+    "pages/admin-review/admin-review",
+    "pages/admin-users/admin-users",
+    "pages/notifications/notifications",
+    "pages/admin/admin",
+    "pages/announcement/announcement",
+    "pages/announcement-detail/announcement-detail",
+    "pages/user-profile/user-profile",
+    "pages/poster/poster"
+  ],
+  "window": {
+    "navigationBarTitleText": "SURF 科研展示",
+    "navigationBarBackgroundColor": "#F7F6F2",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F7F6F2"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#8A8A8A",
+    "selectedColor": "#1A1A1A",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/projects/projects", "text": "项目" },
+      { "pagePath": "pages/explore/explore", "text": "探索" },
+      { "pagePath": "pages/favorites/favorites", "text": "收藏" },
+      { "pagePath": "pages/dashboard/dashboard", "text": "我的" }
+    ]
+  },
+  "usingComponents": {},
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,35 @@
+<view class="notif-wrap">
+  <view class="notif-header" wx:if="{{notifications.length>0}}">
+    <text class="notif-title">通知 {{unreadCount>0?'('+unreadCount+'条未读)':''}}</text>
+    <text class="mark-all" bindtap="markAllRead" wx:if="{{unreadCount>0}}">全部已读</text>
+  </view>
+
+  <view wx:if="{{loading}}">
+    <view class="skeleton" style="height:70px;border-radius:12px;margin:12px 16px" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+  </view>
+
+  <view wx:elif="{{notifications.length===0}}" class="empty-state">
+    <text class="empty-state-icon">🔔</text>
+    <text class="empty-state-text">暂无通知</text>
+  </view>
+
+  <view class="notif-list" wx:else>
+    <view class="notif-item {{!item.read?'unread':''}}" wx:for="{{notifications}}" wx:key="_id" bindtap="onTap" data-id="{{item._id}}" data-projectid="{{item.projectId}}">
+      <view class="notif-dot" wx:if="{{!item.read}}"></view>
+      <view class="notif-icon">
+        <text wx:if="{{item.type==='approve'}}">✅</text>
+        <text wx:elif="{{item.type==='reject'}}">❌</text>
+        <text wx:elif="{{item.type==='vote'}}">👍</text>
+        <text wx:elif="{{item.type==='submit'}}">📤</text>
+        <text wx:elif="{{item.type==='delete'}}">🗑️</text>
+        <text wx:elif="{{item.type==='report'}}">🚨</text>
+        <text wx:else>🔔</text>
+      </view>
+      <view class="notif-body">
+        <text class="notif-title-text">{{item.title}}</text>
+        <text class="notif-content">{{item.content}}</text>
+        <text class="notif-time">{{item.createdAt?item.createdAt.substring(0,16).replace('T',' '):''}}</text>
+      </view>
+    </view>
+  </view>
+</view>

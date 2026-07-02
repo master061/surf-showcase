@@ -1,0 +1,18 @@
+<view class="card" bindtap="onClick">
+  <image class="card-cover" src="{{project.thumbnail}}" mode="aspectFill" wx:if="{{project.thumbnail}}"/>
+  <view class="card-body">
+    <view class="badges-row">
+      <text class="badge {{project.status === 'RECRUITING' ? 'badge-recruit' : 'badge-done'}}">
+        {{project.status === 'RECRUITING' ? '招人中' : '已完成'}}
+      </text>
+      <text class="badge badge-blue">{{project.field}}</text>
+      <text class="badge badge-gray" wx:if="{{project.year}}">{{project.year}}</text>
+    </view>
+    <text class="card-title">{{project.title}}</text>
+    <view class="card-footer">
+      <text class="avatar">{{project.studentName ? project.studentName[0] : '?'}}</text>
+      <text class="author">{{project.studentName}} · {{project.institution}}</text>
+      <view class="vote-pill">❤️ {{project.voteCount || 0}}</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,32 @@
+<view class="ann-page">
+  <!-- Loading -->
+  <view wx:if="{{loading}}"><view class="skeleton" style="height:60px;border-radius:12px;margin:12px 16px" wx:for="{{[1,2]}}" wx:key="*this"></view></view>
+
+  <!-- Empty -->
+  <view wx:elif="{{announcements.length===0 && !editing}}" class="empty-state">
+    <text class="empty-state-icon">📢</text><text class="empty-state-text">暂无公告</text>
+  </view>
+
+  <!-- Edit mode -->
+  <block wx:if="{{editing}}">
+    <view class="edit-section">
+      <text class="form-label">编辑公告</text>
+      <textarea class="edit-textarea" value="{{editContent}}" bindinput="onEditInput" style="min-height:150px"/>
+      <view class="edit-actions">
+        <text class="edit-btn cancel" bindtap="cancelEdit">取消</text>
+        <text class="edit-btn save" bindtap="saveEdit">保存</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- List mode -->
+  <view class="ann-list" wx:else>
+    <view class="ann-item" wx:for="{{announcements}}" wx:key="_id" bindtap="openDetail" data-id="{{item._id}}" data-content="{{item.content}}" data-createdat="{{item.createdAt}}">
+      <view class="ann-header">
+        <text class="ann-time">{{item.createdAt?item.createdAt.substring(0,16).replace('T',' '):''}}</text>
+        <text class="ann-edit" wx:if="{{app.globalData.user && app.globalData.user.role==='ADMIN'}}" catchtap="startEdit" data-id="{{item._id}}" data-content="{{item.content}}">编辑</text>
+      </view>
+      <text class="ann-body line-clamp-2">{{item.content}}</text>
+    </view>
+  </view>
+</view>

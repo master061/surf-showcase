@@ -1,0 +1,27 @@
+<view class="review-wrap">
+  <view class="tab-bar-small">
+    <text class="tab-item {{tab==='pending'?'active':''}}" data-tab="pending" bindtap="switchTab">待审核 ({{pendingList.length}})</text>
+    <text class="tab-item {{tab==='approved'?'active':''}}" data-tab="approved" bindtap="switchTab">已通过 ({{approvedList.length}})</text>
+  </view>
+
+  <view wx:if="{{loading}}"><view class="skeleton" style="height:80px;margin:12px 16px" wx:for="{{[1,2,3]}}" wx:key="*this"></view></view>
+
+  <block wx:if="{{tab==='pending'}}">
+    <view wx:if="{{pendingList.length===0 && !loading}}" class="empty-state"><text class="empty-state-icon">✅</text><text class="empty-state-text">暂无待审核项目</text></view>
+    <view class="review-item" wx:for="{{pendingList}}" wx:key="_id">
+      <view class="ri-top"><text class="ri-title">{{item.title}}</text><text class="ri-user">{{item.studentName}}</text></view>
+      <text class="ri-abs">{{item.abstract}}</text>
+      <view class="ri-actions">
+        <text class="ri-btn approve" data-id="{{item._id}}" bindtap="approve">✅ 通过</text>
+        <text class="ri-btn reject" data-id="{{item._id}}" bindtap="reject">❌ 驳回</text>
+      </view>
+    </view>
+  </block>
+
+  <block wx:if="{{tab==='approved'}}">
+    <view class="review-item" wx:for="{{approvedList}}" wx:key="_id">
+      <text class="ri-title">{{item.title}}</text>
+      <text class="ri-abs">{{item.abstract}}</text>
+    </view>
+  </block>
+</view>

@@ -1,58 +1,27 @@
 {
-  "miniprogramRoot": "dist/",
-  "projectname": "taro-app",
-  "description": "Taro 微信小程序",
-  "appid": "wxee7fcbf5ccd2f5d3",
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
     "urlCheck": false,
     "es6": true,
-    "enhance": true,
+    "enhance": false,
     "postcss": true,
-    "preloadBackgroundData": false,
     "minified": true,
-    "newFeature": false,
     "coverView": true,
     "nodeModules": false,
-    "autoAudits": false,
     "showShadowRootInWxmlPanel": true,
-    "scopeDataCheck": false,
-    "uglifyFileName": false,
-    "checkInvalidKey": true,
-    "checkSiteMap": true,
-    "uploadWithSourceMap": true,
-    "compileHotReLoad": true,
-    "lazyloadPlaceholderEnable": false,
-    "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "useCompilerPlugins": false,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    },
-    "useCompilerPlugins": false,
-    "compileWorklet": false,
-    "packNpmManually": false,
-    "packNpmRelationList": [],
-    "minifyWXSS": true,
-    "minifyWXML": true,
-    "localPlugins": false,
-    "disableUseStrict": false,
-    "condition": false,
-    "swc": false,
-    "disableSWC": true
+    }
   },
-  "compileType": "miniprogram",
+  "appid": "wx173a61a8eacc838e",
+  "projectname": "surf-showcase",
   "libVersion": "3.16.1",
-  "srcMiniprogramRoot": "dist/",
-  "packOptions": {
-    "ignore": [],
-    "include": []
-  },
-  "editorSetting": {
-    "tabIndent": "insertSpaces",
-    "tabSize": 2
-  },
-  "condition": {},
-  "simulatorPluginLibVersion": {}
+  "compileType": "miniprogram",
+  "condition": {}
 }

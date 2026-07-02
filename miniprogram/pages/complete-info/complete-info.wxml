@@ -1,0 +1,12 @@
+<view class="page-wrap">
+  <view class="auth-card">
+    <text class="page-title">欢迎加入 🎉</text>
+    <text class="page-sub">请完善你的学生信息</text>
+    <view class="form-group" wx:if="{{error}}"><view class="error-msg">{{error}}</view></view>
+    <view class="form-group"><text class="form-label">姓名 *</text><input class="form-input" value="{{name}}" bindinput="onInput" data-field="name" placeholder="你的姓名"/></view>
+    <view class="form-group"><text class="form-label">学号</text><input class="form-input" value="{{studentId}}" bindinput="onInput" data-field="studentId" placeholder="输入学号"/></view>
+    <view class="form-group"><text class="form-label">学校/院系</text><input class="form-input" value="{{institution}}" bindinput="onInput" data-field="institution" placeholder="计算机科学与技术学院"/></view>
+    <view class="form-group"><text class="form-label">入学年份</text><picker mode="selector" range="{{years}}" value="{{yearIdx}}" bindchange="onYearChange"><view class="form-input">{{years[yearIdx]}}</view></picker></view>
+    <button class="btn btn-primary btn-block btn-lg" bindtap="submit" loading="{{loading}}">保存并进入</button>
+  </view>
+</view>

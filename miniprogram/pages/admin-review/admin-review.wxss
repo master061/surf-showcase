@@ -1,0 +1,13 @@
+.review-wrap{padding:0}
+.tab-bar-small{display:flex;background:#fff;padding:10px 16px;border-bottom:1px solid #f0f0f0}
+.tab-item{flex:1;text-align:center;padding:8px 0;font-size:14px;font-weight:500;color:#86868b;border-bottom:2px solid transparent}
+.tab-item.active{color:#007aff;border-bottom-color:#007aff}
+.review-item{background:#fff;border-radius:12px;padding:14px;margin:8px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.ri-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.ri-title{font-size:15px;font-weight:700;color:#1d1d1f;flex:1}
+.ri-user{font-size:12px;color:#86868b;margin-left:8px}
+.ri-abs{font-size:13px;color:#6b7280;line-height:1.5;display:block;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:10px}
+.ri-actions{display:flex;gap:10px}
+.ri-btn{flex:1;text-align:center;padding:8px 0;border-radius:8px;font-size:13px;font-weight:600}
+.ri-btn.approve{background:#ecfdf5;color:#059669}
+.ri-btn.reject{background:#fef2f2;color:#dc2626}

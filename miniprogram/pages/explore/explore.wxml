@@ -1,0 +1,39 @@
+<view class="pg">
+  <view class="header">
+    <text class="serif title-xl">探索</text>
+    <view class="search-box">
+      <input placeholder="搜索项目..." placeholder-class="placeholder" bindinput="onSearchInput" value="{{search}}"/>
+    </view>
+  </view>
+
+  <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="chip {{activeTag === item ? 'active' : ''}}" wx:for="{{tags}}" wx:key="*this" bindtap="onTagTap" data-tag="{{item}}">{{item}}</view>
+  </scroll-view>
+
+  <view class="section" wx:if="{{!loading}}">
+    <view class="sec-header">
+      <text class="serif sec-title">热门项目</text>
+      <text class="sec-more">更多 →</text>
+    </view>
+    <view class="project-card" wx:for="{{projects}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
+      <image class="cover" src="{{item.thumbnail}}" mode="aspectFill" wx:if="{{item.thumbnail}}"/>
+      <view class="card-body">
+        <view class="badges">
+          <text class="badge {{item.status === 'RECRUITING' ? 'badge-recruit' : 'badge-done'}}">{{item.status === 'RECRUITING' ? '🔍 招人中' : '✅ 已完成'}}</text>
+          <text class="badge badge-blue">{{item.field}}</text>
+        </view>
+        <text class="title">{{item.title}}</text>
+        <text class="meta">{{item.studentName}} · {{item.institution}}</text>
+        <view class="card-footer">
+          <view class="vote-pill">❤️ {{item.voteCount || 0}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section" wx:if="{{loading}}">
+    <view class="skeleton" style="height:400rpx;margin-bottom:24rpx;border-radius:32rpx" wx:for="{{[1,2]}}" wx:key="*this"></view>
+  </view>
+
+  <view style="height:120rpx"></view>
+</view>

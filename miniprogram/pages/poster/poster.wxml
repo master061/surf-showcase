@@ -1,0 +1,21 @@
+<view class="poster-page">
+  <!-- Close button -->
+  <view class="close-btn" bindtap="close">✕</view>
+
+  <!-- Hidden canvas -->
+  <canvas canvas-id="posterCanvas" class="hidden-canvas"></canvas>
+
+  <block wx:if="{{!previewPath}}">
+    <view class="loading"><text class="loading-icon">🎨</text><text class="loading-text">正在生成海报…</text></view>
+  </block>
+
+  <block wx:else>
+    <view class="preview-area">
+      <image class="poster-img" src="{{previewPath}}" mode="aspectFit"/>
+    </view>
+    <view class="action-bar">
+      <view class="action-btn secondary" bindtap="close">关闭</view>
+      <button class="action-btn primary" bindtap="saveToAlbum" loading="{{saving}}" disabled="{{saving}}">保存到相册</button>
+    </view>
+  </block>
+</view>

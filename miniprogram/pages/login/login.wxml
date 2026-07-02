@@ -1,0 +1,35 @@
+<view class="page">
+  <!-- Full screen gradient background -->
+  <view class="bg-gradient">
+    <view class="bg-circle-1"></view>
+    <view class="bg-circle-2"></view>
+    <view class="bg-circle-3"></view>
+  </view>
+
+  <view class="content">
+    <!-- Logo area -->
+    <view class="logo-area">
+      <view class="logo-icon">
+        <text class="logo-text">S</text>
+      </view>
+      <text class="app-name">SURF</text>
+      <text class="app-desc">学生科研展示平台</text>
+    </view>
+
+    <!-- Cards -->
+    <view class="card-area">
+      <view class="login-card">
+        <button class="btn-wechat" bindtap="wechatLogin" loading="{{loading}}">
+          <text class="btn-icon">💬</text>
+          <text>微信一键登录</text>
+        </button>
+
+        <view class="divider"><text>或</text></view>
+
+        <button class="btn-email" bindtap="goRegister">使用邮箱注册</button>
+      </view>
+    </view>
+
+    <text class="footer-text">登录即表示同意《用户协议》和《隐私政策》</text>
+  </view>
+</view>

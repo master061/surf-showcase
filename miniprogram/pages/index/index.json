@@ -1,0 +1,1 @@
+{ "usingComponents": { "project-card": "/components/project-card/project-card" }, "navigationBarTitleText": "SURF 科研展示", "enablePullDownRefresh": true, "backgroundTextStyle": "dark" }

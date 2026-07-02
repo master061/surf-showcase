@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SURF 科研展示小程序 - PRD</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;background:#f5f5f7;color:#1d1d1f;padding:0;line-height:1.7}
+.header{background:linear-gradient(135deg,#1a1a2e,#0f3460);padding:32px 20px 24px;color:#fff}
+.header h1{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.header .sub{font-size:13px;color:rgba(255,255,255,0.6);margin-top:6px}
+.content{padding:16px}
+.section{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.section h2{font-size:18px;font-weight:700;color:#1d1d1f;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #1e40af}
+.section h3{font-size:16px;font-weight:700;color:#1d1d1f;margin-bottom:10px;margin-top:16px}
+.section h3:first-child{margin-top:0}
+.section h4{font-size:14px;font-weight:600;color:#374151;margin-bottom:8px;margin-top:14px}
+.section p{font-size:14px;color:#515154;margin-bottom:10px;line-height:1.8}
+.section ul{padding-left:18px;margin-bottom:10px}
+.section li{font-size:14px;color:#515154;margin-bottom:6px;line-height:1.7}
+.tag{display:inline-block;background:#eef2ff;color:#6366f1;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;margin-right:4px}
+.tag.green{background:#ecfdf5;color:#059669}
+.tag.gold{background:#fffbeb;color:#d97706}
+.divider{height:1px;background:#e5e5ea;margin:12px 0}
+.card{border:1px solid #e5e5ea;border-radius:12px;padding:14px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:700;color:#1d1d1f;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card-body{font-size:13px;color:#6b7280;line-height:1.6}
+.table-wrap{overflow-x:auto;margin:10px 0;border-radius:10px;border:1px solid #e5e5ea}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f9fafb;padding:10px 12px;text-align:left;font-weight:600;color:#374151;border-bottom:1px solid #e5e5ea}
+td{padding:10px 12px;border-bottom:1px solid #f3f4f6;color:#515154}
+tr:last-child td{border-bottom:none}
+.footer{text-align:center;padding:20px;font-size:12px;color:#aeaeb2}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>SURF 学生科研展示小程序</h1>
+  <div class="sub">产品需求文档 · v1.0</div>
+</div>
+<div class="content">
+
+<div class="section">
+  <h2>1. 产品概述</h2>
+  <p><strong>产品背景：</strong>高校学生参与科研项目后缺乏有效的展示和宣传渠道。现有的学术交流平台多面向教师和研究人员，缺少一个专属于本科生的科研成果展示空间。</p>
+  <p><strong>产品定位：</strong>面向本校学生的科研项目宣传与展览平台。学生通过身份认证后，可以发布自己的科研项目，向全校师生展示研究成果，促进跨学科交流与合作。</p>
+  <p><strong>产品目标：</strong></p>
+  <ul>
+    <li>为学生提供便捷的科研成果展示渠道</li>
+    <li>降低科研项目的宣传门槛，帮助新项目招募团队成员</li>
+    <li>促进不同专业学生之间的学术交流</li>
+    <li>营造校园科研氛围</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>2. 用户角色</h2>
+  <div class="card">
+    <div class="card-title">👤 游客</div>
+    <div class="card-body">浏览所有项目 · 搜索筛选 · 查看详情。不能发布、编辑、投票。</div>
+  </div>
+  <div class="card">
+    <div class="card-title">🎓 认证学生</div>
+    <div class="card-body">拥有游客所有权限 + 发布/管理项目 + 投票 + 编辑个人资料。</div>
+  </div>
+  <div class="card">
+    <div class="card-title">🛡️ 管理员</div>
+    <div class="card-body">拥有学生所有权限 + 管理所有项目 + 管理用户。</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>3. 功能需求</h2>
+
+  <h3>3.1 用户系统</h3>
+  <h4>注册</h4>
+  <ul>
+    <li>学生使用学校邮箱或个人邮箱注册</li>
+    <li>填写：姓名、学号、学校/院系、入学年份</li>
+    <li>设置账号密码，注册成功后自动登录</li>
+  </ul>
+  <h4>登录</h4>
+  <ul>
+    <li>使用邮箱和密码登录，微信一键登录</li>
+    <li>登录后保持会话状态</li>
+  </ul>
+  <h4>个人资料管理</h4>
+  <ul>
+    <li>查看和编辑：姓名、学号、学校/院系、入学年份、个人简介、头像</li>
+    <li>个人资料在项目展示中对外可见</li>
+  </ul>
+
+  <div class="divider"></div>
+  <h3>3.2 项目发布与管理</h3>
+  <h4>项目状态</h4>
+  <p>项目分为两种状态：</p>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <span class="tag green">✅ 已完成项目</span>
+    <span class="tag gold">🔍 招人项目</span>
+  </div>
+  <p><strong>已完成项目：</strong>分享已经完成的科研项目经历，包含成果、研究方法等。</p>
+  <ul>
+    <li>填写字段：标题、领域、摘要、详细介绍、年份、类型、封面、标签</li>
+    <li>额外字段：参与成员、指导老师、成果链接</li>
+  </ul>
+  <p><strong>招人项目：</strong>发布刚立项、正在招募团队成员的新项目。</p>
+  <ul>
+    <li>填写字段：标题、领域、摘要、详细介绍、年份、类型、封面、标签</li>
+    <li>额外字段：招募角色/人数、联系方式、预期周期</li>
+    <li>项目完成后可标记为"已完成"</li>
+  </ul>
+
+  <div class="divider"></div>
+  <h3>3.3 项目展示</h3>
+  <h4>首页</h4>
+  <ul>
+    <li>热门推荐、最新发布、招人项目快捷入口</li>
+    <li>研究领域快捷入口、平台统计数据</li>
+  </ul>
+  <h4>项目列表页</h4>
+  <ul>
+    <li>卡片展示、状态标签区分、状态/领域/年份/类型筛选</li>
+    <li>多种排序（最新/最热）、分页加载</li>
+  </ul>
+  <h4>项目详情页</h4>
+  <ul>
+    <li>封面、标题、领域、年份、类型、状态标识</li>
+    <li>已完成：成员、老师、成果链接、详细介绍</li>
+    <li>招人中：招募信息、联系方式、项目计划</li>
+    <li>投票功能、作者信息</li>
+  </ul>
+
+  <div class="divider"></div>
+  <h3>3.4 搜索与筛选</h3>
+  <ul>
+    <li><strong>全局搜索：</strong>按标题、标签、研究方向模糊搜索</li>
+    <li><strong>多维度筛选：</strong>领域 + 类型 + 年份 + 状态 + 标签</li>
+    <li><strong>搜索建议：</strong>输入时弹出自动补全建议</li>
+  </ul>
+
+  <div class="divider"></div>
+  <h3>3.5 投票系统</h3>
+  <ul>
+    <li>认证学生可投票/取消，每人每项目限投一票</li>
+    <li>投票数反映项目受欢迎程度</li>
+  </ul>
+
+  <div class="divider"></div>
+  <h3>3.6 个人中心</h3>
+  <ul>
+    <li>我的项目（按状态分组：招人中/已完成）</li>
+    <li>项目数量统计、总获票数统计</li>
+    <li>个人资料编辑入口</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>4. 页面结构</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>页面</th><th>说明</th></tr>
+      <tr><td>首页</td><td>热门推荐、招人项目入口、最新项目、领域入口</td></tr>
+      <tr><td>项目列表</td><td>搜索、筛选、排序、卡片列表</td></tr>
+      <tr><td>项目详情</td><td>完整信息、状态标识、投票</td></tr>
+      <tr><td>发布项目</td><td>表单（含状态选择，不同状态不同字段）</td></tr>
+      <tr><td>编辑项目</td><td>修改已发布的项目，支持状态切换</td></tr>
+      <tr><td>登录</td><td>微信一键登录 + 邮箱密码</td></tr>
+      <tr><td>注册</td><td>学生身份注册</td></tr>
+      <tr><td>个人中心</td><td>我的项目（按状态分组）、统计</td></tr>
+      <tr><td>个人资料</td><td>查看和编辑个人信息</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <h2>5. 非功能需求</h2>
+  <ul>
+    <li><strong>用户体验：</strong>界面简洁、已完成和招人项目有明显视觉区分、骨架屏加载、操作反馈及时</li>
+    <li><strong>权限安全：</strong>未登录只能浏览、学生只能管理自己的项目、密码加密存储</li>
+    <li><strong>数据：</strong>持久化保存、搜索响应快速、分页展示</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>6. 迭代规划</h2>
+  <div class="card">
+    <div class="card-title">📦 第一阶段（MVP）</div>
+    <div class="card-body">用户注册登录 · 项目发布与管理（已完成/招人中）· 项目列表与详情 · 投票</div>
+  </div>
+  <div class="card">
+    <div class="card-title">🚀 第二阶段</div>
+    <div class="card-body">搜索与多维筛选 · 自动补全 · 个人资料 · 首页优化</div>
+  </div>
+  <div class="card">
+    <div class="card-title">🌟 第三阶段</div>
+    <div class="card-body">管理员后台 · 评论留言 · 消息通知 · 分享功能</div>
+  </div>
+</div>
+
+<div class="footer">SURF Showcase · 2026</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+.page{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+
+/* Full-screen gradient background */
+.bg-gradient{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 30%,#0f3460 60%,#533483 100%);z-index:0}
+.bg-circle-1{position:absolute;top:-20%;right:-20%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.3) 0%,transparent 70%)}
+.bg-circle-2{position:absolute;bottom:-10%;left:-15%;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(52,211,153,0.15) 0%,transparent 70%)}
+.bg-circle-3{position:absolute;top:40%;left:50%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,0.1) 0%,transparent 70%)}
+
+.content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 28px}
+
+/* Logo */
+.logo-area{text-align:center;margin-bottom:48px}
+.logo-icon{width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,0.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:1px solid rgba(255,255,255,0.08)}
+.logo-text{font-size:34px;color:#fff;font-weight:800}
+.app-name{font-size:28px;font-weight:800;color:#fff;display:block;letter-spacing:3px;text-transform:uppercase}
+.app-desc{font-size:14px;color:rgba(255,255,255,0.55);display:block;margin-top:6px}
+
+/* Card */
+.card-area{margin-bottom:24px}
+.login-card{background:rgba(255,255,255,0.08);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:20px;padding:28px 20px;border:1px solid rgba(255,255,255,0.06)}
+
+/* Buttons */
+.btn-wechat{width:100%;padding:14px 0;border-radius:14px;font-size:16px;font-weight:700;border:none;background:#07c160;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(7,193,96,0.25)}
+.btn-icon{font-size:20px}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.12)}
+.divider text{font-size:12px;color:rgba(255,255,255,0.4)}
+.btn-email{width:100%;padding:14px 0;border-radius:14px;font-size:15px;font-weight:600;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff}
+
+.footer-text{text-align:center;font-size:11px;color:rgba(255,255,255,0.3)}

@@ -1,0 +1,34 @@
+<view class="pg">
+  <view class="header">
+    <text class="serif title-xl">收藏</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="section">
+    <view class="skeleton" style="height:400rpx;margin-bottom:24rpx;border-radius:32rpx" wx:for="{{[1,2]}}" wx:key="*this"></view>
+  </view>
+
+  <view wx:elif="{{projects.length === 0}}" class="empty-state">
+    <text class="empty-state-icon">🔖</text>
+    <text class="empty-state-text">还没有收藏任何项目</text>
+    <text class="empty-state-hint">去探索发现感兴趣的项目吧</text>
+  </view>
+
+  <view wx:else class="section">
+    <view class="project-card" wx:for="{{projects}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
+      <image class="cover" src="{{item.thumbnail}}" mode="aspectFill" wx:if="{{item.thumbnail}}"/>
+      <view class="card-body">
+        <view class="badges">
+          <text class="badge {{item.status === 'RECRUITING' ? 'badge-recruit' : 'badge-done'}}">{{item.status === 'RECRUITING' ? '🔍 招人中' : '✅ 已完成'}}</text>
+          <text class="badge badge-blue">{{item.field}}</text>
+        </view>
+        <text class="title">{{item.title}}</text>
+        <text class="meta">{{item.studentName}} · {{item.institution}}</text>
+        <view class="card-footer">
+          <view class="vote-pill">❤️ {{item.voteCount || 0}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view style="height:120rpx"></view>
+</view>

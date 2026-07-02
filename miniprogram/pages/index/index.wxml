@@ -1,0 +1,75 @@
+<view class="pg">
+  <!-- Hero -->
+  <view class="hero">
+    <view class="hero-top">
+      <text class="hero-greeting">👋 欢迎{{user ? '回来，'+user.name : '！'}}</text>
+      <view class="hero-noti" bindtap="goNotifications">🔔<text class="noti-badge" wx:if="{{unreadCount>0}}">{{unreadCount}}</text></view>
+    </view>
+    <view class="hero-title-group">
+      <text class="hero-title-main">SURF</text>
+      <text class="hero-title-main">科研展示</text>
+    </view>
+    <text class="hero-sub-en">SUMMER UNDERGRADUATE RESEARCH FELLOWSHIP</text>
+    <view class="hero-divider"></view>
+    <text class="hero-sub">探索本科生优秀科研成果，发现前沿研究方向与创新灵感</text>
+    <view class="stats-row" style="flex-wrap:wrap">
+      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num">{{stats.projects}}</text><text class="stat-lbl">项目总数</text></view>
+      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num">{{stats.recruitCount}}</text><text class="stat-lbl">正在招人</text></view>
+      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num">{{stats.users||'...'}}</text><text class="stat-lbl">用户总数</text></view>
+      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num">{{stats.votes||'...'}}</text><text class="stat-lbl">总获票</text></view>
+    </view>
+    <view class="action-row">
+      <view class="action-btn action-browse" bindtap="goProjects">🔍 浏览项目</view>
+      <view class="action-btn action-publish" bindtap="onAction">{{user ? '🚀 发布项目' : '🔑 登录'}}</view>
+    </view>
+  </view>
+
+  <!-- Announcements -->
+  <view class="announce-bar" wx:if="{{announcements.length>0}}" bindtap="goAnnouncements">
+    <text class="announce-icon">📢</text>
+    <text class="announce-text">{{announcements[0].content}}</text>
+    <text class="announce-more">详情 →</text>
+  </view>
+
+  <!-- Recruiting -->
+  <view class="section" wx:if="{{recruitProjects.length>0}}">
+    <view class="sec-header"><text class="sec-title">🔍 正在招人</text><text class="sec-more" bindtap="goProjectsWith" data-status="RECRUITING">查看全部 →</text></view>
+    <view class="recruit-card" wx:for="{{recruitProjects}}" wx:key="_id">
+      <project-card project="{{item}}"/>
+    </view>
+  </view>
+
+  <!-- Fields -->
+  <view class="section">
+    <view class="sec-header"><text class="sec-title">📂 研究领域</text></view>
+    <view class="field-grid">
+      <view class="field-item" wx:for="{{fieldList}}" wx:for-index="i" wx:key="name" bindtap="goProjects" data-field="{{item.name}}">
+        <text class="field-icon">{{item.icon}}</text>
+        <text class="field-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Hot -->
+  <view class="section" wx:if="{{!loading}}">
+    <view class="sec-header"><text class="sec-title">🔥 热门推荐</text><text class="sec-more" bindtap="goProjectsWith" data-sort="hot">更多 →</text></view>
+    <block wx:if="{{hotProjects.length>0}}">
+      <project-card wx:for="{{hotProjects}}" wx:key="_id" project="{{item}}"/>
+    </block>
+    <block wx:else>
+      <view class="empty-state"><text class="empty-state-icon">📭</text></view>
+    </block>
+  </view>
+
+  <!-- Latest -->
+  <view class="section" wx:if="{{!loading}}">
+    <view class="sec-header"><text class="sec-title">✨ 最新发布</text><text class="sec-more" bindtap="goProjectsWith">更多 →</text></view>
+    <project-card wx:for="{{latestProjects}}" wx:key="_id" project="{{item}}"/>
+  </view>
+
+  <!-- Skeleton -->
+  <view class="section" wx:if="{{loading}}">
+    <view class="skeleton" style="height:120px;margin-bottom:10px" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+  </view>
+  <view style="height:20px"/>
+</view>

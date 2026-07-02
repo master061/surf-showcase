@@ -1,0 +1,111 @@
+<view class="detail-wrap" wx:if="{{!loading}}">
+  <!-- Hero Image -->
+  <view class="detail-hero">
+    <image class="detail-img" src="{{project.thumbnail}}" mode="aspectFill" wx:if="{{project.thumbnail}}"/>
+    <view class="detail-thumb" wx:else>🔬</view>
+    <view class="back-btn" bindtap="goBack">‹</view>
+  </view>
+
+  <view class="detail-body">
+    <view class="badges-row">
+      <text class="badge {{project.status==='RECRUITING'?'badge-recruit':'badge-done'}}">{{project.status==='RECRUITING'?'🔍 招人中':'✅ 已完成'}}</text>
+      <text class="badge badge-blue">{{project.field}}</text>
+      <text class="badge badge-gray" wx:if="{{project.year}}">{{project.year}}</text>
+      <text class="badge badge-green">{{typeLabels[project.type]||project.type}}</text>
+    </view>
+
+    <text class="detail-title">{{project.title}}</text>
+
+    <view class="author-row">
+      <text class="author-avatar">{{project.studentName?project.studentName[0]:'?'}}</text>
+      <view class="author-info">
+        <text class="author-name">{{project.studentName}}</text>
+        <text class="author-school">{{project.institution}}</text>
+      </view>
+      <view class="vote-box">
+        <text class="vote-num">{{voteCount}}</text>
+        <text class="vote-lbl">票</text>
+      </view>
+    </view>
+
+    <view class="recruit-banner" wx:if="{{project.status==='RECRUITING'}}">
+      <text>🔍 <text style="font-weight:600">正在招募队友！</text> 期待你的加入</text>
+    </view>
+
+    <view class="recruit-grid" wx:if="{{project.status==='RECRUITING'}}">
+      <view class="recruit-cell" wx:if="{{project.recruitCount}}">
+        <text class="rc-num">{{project.recruitCount}}</text>
+        <text class="rc-lbl">招募人数</text>
+      </view>
+      <view class="recruit-cell" wx:if="{{project.expectedDuration}}">
+        <text class="rc-dur">{{project.expectedDuration}}</text>
+        <text class="rc-lbl">预期周期</text>
+      </view>
+    </view>
+
+    <view class="detail-section">
+      <text class="ds-title">📝 项目简介</text>
+      <text class="ds-body {{expandedAbstract?'':'clamped'}}">{{project.abstract}}</text>
+      <text class="expand-btn" bindtap="toggleAbstract">{{expandedAbstract?'收起 ▲':'展开 ▼'}}</text>
+    </view>
+
+    <view class="detail-section" wx:if="{{project.content}}">
+      <text class="ds-title">📈 研究成果</text>
+      <text class="ds-body {{expandedContent?'':'clamped'}}">{{project.content}}</text>
+      <text class="expand-btn" bindtap="toggleContent">{{expandedContent?'收起 ▲':'展开 ▼'}}</text>
+    </view>
+
+    <view class="detail-section" wx:if="{{project.advisor}}">
+      <text class="ds-title">👨‍🏫 指导老师</text>
+      <text class="ds-body">{{project.advisor}}</text>
+    </view>
+
+    <view class="detail-section" wx:if="{{project.status==='RECRUITING' && project.recruitRequirements}}">
+      <text class="ds-title">🎯 招募要求</text>
+      <text class="ds-body">{{project.recruitRequirements}}</text>
+      <view class="contact-box" wx:if="{{project.contactInfo}}">📧 {{project.contactInfo}}</view>
+    </view>
+
+    <view class="detail-section" wx:if="{{project.status!=='RECRUITING' && project.members}}">
+      <text class="ds-title">👥 参与成员</text>
+      <text class="ds-body">{{project.members}}</text>
+    </view>
+
+    <view class="detail-section" wx:if="{{project.status!=='RECRUITING' && project.resultLinks}}">
+      <text class="ds-title">🔗 成果链接</text>
+      <text class="ds-body link">{{project.resultLinks}}</text>
+    </view>
+
+    <view class="detail-section" wx:if="{{tags.length>0}}">
+      <text class="ds-title">🏷️ 标签</text>
+      <view class="tags-row">
+        <text class="tag" wx:for="{{tags}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <view style="height:160rpx"></view>
+  </view>
+
+  <!-- Bottom Action Bar -->
+  <view class="bottom-bar">
+    <view class="action-btn vote-btn {{voted?'voted':'not-voted'}}" bindtap="toggleVote">
+      {{voted?'❤️ 已投票':'🤍 投票'}} · {{voteCount}}
+    </view>
+    <view class="action-btn contact-btn" wx:if="{{project.status==='RECRUITING' && project.contactInfo}}" bindtap="contactOwner">
+      ✉️ 联系发起人
+    </view>
+  </view>
+
+  <view class="owner-actions" wx:if="{{user && (project.userId===user._id || user.role==='ADMIN')}}">
+    <view class="owner-btn edit" bindtap="goEdit">✏️ 编辑</view>
+    <view class="owner-btn delete" bindtap="deleteProject">🗑️ 删除</view>
+  </view>
+
+  <view class="poster-action" bindtap="generatePoster">🎨 生成海报</view>
+  <view class="report-action" bindtap="reportProject" wx:if="{{user && project.userId!==user._id}}">🚨 举报</view>
+</view>
+
+<view wx:else>
+  <view class="skeleton" style="height:500px;margin:0" wx:for="{{[1]}}" wx:key="*this"></view>
+  <view class="skeleton" style="height:120px;margin:24rpx" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+</view>
