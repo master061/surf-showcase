@@ -1,25 +1,18 @@
-<view class="card {{project.status === 'RECRUITING' ? 'recruit-border' : ''}}" bindtap="onClick">
-  <view class="card-top">
+<view class="card" bindtap="onClick">
+  <image class="card-cover" src="{{project.thumbnail}}" mode="aspectFill" wx:if="{{project.thumbnail}}"/>
+  <view class="card-body">
     <view class="badges-row">
-      <text class="{{project.status === 'RECRUITING' ? 'badge badge-recruit' : 'badge badge-done'}}">
-        {{project.status === 'RECRUITING' ? '🔍 招人中' : '✅ 已完成'}}
+      <text class="badge {{project.status === 'RECRUITING' ? 'badge-recruit' : 'badge-done'}}">
+        {{project.status === 'RECRUITING' ? '招人中' : '已完成'}}
       </text>
       <text class="badge badge-blue">{{project.field}}</text>
       <text class="badge badge-gray" wx:if="{{project.year}}">{{project.year}}</text>
-      <text class="badge badge-green">{{typeLabels[project.type] || project.type}}</text>
     </view>
-    <text class="vote-count">★ {{project.voteCount || 0}}</text>
-  </view>
-  <text class="card-title">{{project.title}}</text>
-  <text class="card-abs">{{project.abstract}}</text>
-  <view class="card-tags" wx:if="{{showTags.length > 0}}">
-    <text class="tag" wx:for="{{showTags}}" wx:key="*this">{{item}}</text>
-    <text class="tag tag-recruit" wx:if="{{project.status === 'RECRUITING' && project.recruitCount}}">
-      👥 招{{project.recruitCount}}人
-    </text>
-  </view>
-  <view class="card-footer">
-    <text class="avatar">{{project.studentName ? project.studentName[0] : '?'}}</text>
-    <text class="author">{{project.studentName}} · {{project.institution}}</text>
+    <text class="card-title">{{project.title}}</text>
+    <view class="card-footer">
+      <text class="avatar">{{project.studentName ? project.studentName[0] : '?'}}</text>
+      <text class="author">{{project.studentName}} · {{project.institution}}</text>
+      <view class="vote-pill">❤️ {{project.voteCount || 0}}</view>
+    </view>
   </view>
 </view>

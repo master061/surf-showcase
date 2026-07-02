@@ -13,10 +13,10 @@
     <view class="hero-divider"></view>
     <text class="hero-sub">探索本科生优秀科研成果，发现前沿研究方向与创新灵感</text>
     <view class="stats-row" style="flex-wrap:wrap">
-      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num blue">{{stats.projects}}</text><text class="stat-lbl">项目总数</text></view>
-      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num gold">{{stats.recruitCount}}</text><text class="stat-lbl">正在招人</text></view>
-      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num green">{{stats.users||'...'}}</text><text class="stat-lbl">用户总数</text></view>
-      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num purple">{{stats.votes||'...'}}</text><text class="stat-lbl">总获票</text></view>
+      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num">{{stats.projects}}</text><text class="stat-lbl">项目总数</text></view>
+      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num">{{stats.recruitCount}}</text><text class="stat-lbl">正在招人</text></view>
+      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num">{{stats.users||'...'}}</text><text class="stat-lbl">用户总数</text></view>
+      <view class="stat-card" style="flex:1;min-width:30%"><text class="stat-num">{{stats.votes||'...'}}</text><text class="stat-lbl">总获票</text></view>
     </view>
     <view class="action-row">
       <view class="action-btn action-browse" bindtap="goProjects">🔍 浏览项目</view>

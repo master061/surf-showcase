@@ -3,6 +3,9 @@ const app = getApp()
 Page({
   data: { user:null, list:[], recruitProjects:[], doneProjects:[], loading:true, isLoggedIn:false },
   onShow(){
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 4 })
+    }
     const user = app.globalData.user
     const token = wx.getStorageSync('token')
     if (!token || !user) { this.setData({ isLoggedIn: false, loading: false }); return }

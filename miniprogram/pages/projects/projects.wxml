@@ -1,34 +1,60 @@
-<view class="list-wrap">
-  <view class="search-bar"><text class="search-icon">🔍</text><input class="search-input" placeholder="搜索项目、标签、作者..." value="{{search}}" bindinput="onSearchInput" bindconfirm="onSearchConfirm" focus="{{searchFocused}}"/><text class="search-cancel" wx:if="{{search||showSug}}" bindtap="clearSearch">取消</text></view>
+<view class="pg">
+  <view class="header">
+    <text class="serif title-xl">项目</text>
+  </view>
+
+  <view class="search-bar">
+    <text class="search-icon">🔍</text>
+    <input class="search-input" placeholder="搜索项目、标签、作者..." placeholder-class="placeholder" value="{{search}}" bindinput="onSearchInput" bindconfirm="onSearchConfirm" focus="{{searchFocused}}"/>
+    <text class="search-cancel" wx:if="{{search||showSug}}" bindtap="clearSearch">取消</text>
+  </view>
+
   <view class="suggestions" wx:if="{{showSug && (suggestions.titles.length>0||suggestions.tags.length>0)}}">
-    <view wx:if="{{suggestions.titles.length>0}}"><text class="sg-label">项目标题</text><text class="sg-item" wx:for="{{suggestions.titles}}" wx:key="*this" bindtap="onSugClick" data-value="{{item}}">{{item}}</text></view>
-    <view wx:if="{{suggestions.tags.length>0}}"><text class="sg-label">标签</text><view class="sg-tags"><text class="tag-chip" wx:for="{{suggestions.tags}}" wx:key="*this" bindtap="onSugClick" data-value="{{item}}">{{item}}</text></view></view>
-  </view>
-  <scroll-view class="filter-scroll" scroll-x>
-    <view class="filter-chips">
-      <text class="chip {{statusVal===''?'chip-active':''}}" wx:for="{{statuses}}" wx:key="value" bindtap="onStatusTap" data-value="{{item.value}}">{{item.label}}</text>
+    <view wx:if="{{suggestions.titles.length>0}}">
+      <text class="sg-label">项目标题</text>
+      <text class="sg-item" wx:for="{{suggestions.titles}}" wx:key="*this" bindtap="onSugClick" data-value="{{item}}">{{item}}</text>
     </view>
-  </scroll-view>
-  <scroll-view class="filter-scroll" scroll-x>
-    <view class="filter-chips">
-      <text class="chip {{fieldIdx===i?'chip-active':''}}" wx:for="{{fields}}" wx:for-index="i" wx:key="*this" bindtap="onFieldTap" data-idx="{{i}}">{{item}}</text>
+    <view wx:if="{{suggestions.tags.length>0}}">
+      <text class="sg-label">标签</text>
+      <view class="sg-tags">
+        <text class="tag-chip" wx:for="{{suggestions.tags}}" wx:key="*this" bindtap="onSugClick" data-value="{{item}}">{{item}}</text>
+      </view>
     </view>
-  </scroll-view>
-  <view class="filter-row">
-    <picker mode="selector" range="{{types}}" value="{{typeIdx}}" bindchange="onTypeChange"><view class="filter-picker">📋 {{types[typeIdx]}}</view></picker>
-    <picker mode="selector" range="{{years}}" value="{{yearIdx}}" bindchange="onYearChange"><view class="filter-picker">📅 {{years[yearIdx]}}</view></picker>
   </view>
+
+  <view class="tabs">
+    <view class="tab {{statusVal===''?'active':''}}" bindtap="onStatusTap" data-value="">全部项目</view>
+    <view class="tab {{statusVal==='RECRUITING'?'active':''}}" bindtap="onStatusTap" data-value="RECRUITING">正在招人</view>
+  </view>
+
+  <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="chip {{fieldIdx===i?'active':''}}" wx:for="{{fields}}" wx:for-index="i" wx:key="*this" bindtap="onFieldTap" data-idx="{{i}}">{{item}}</view>
+  </scroll-view>
+
   <view class="sort-row">
-    <text class="sort-opt {{sort==='newest'?'active':''}}" data-sort="newest" bindtap="setSort">最新发布</text>
-    <text class="sort-opt {{sort==='hot'?'active':''}}" data-sort="hot" bindtap="setSort">最多投票</text>
+    <view class="pill-btn {{sort==='newest'?'primary':'ghost'}}" data-sort="newest" bindtap="setSort">最新发布</view>
+    <view class="pill-btn {{sort==='hot'?'primary':'ghost'}}" data-sort="hot" bindtap="setSort">最多投票</view>
   </view>
-  <view wx:if="{{loading}}"><view class="skeleton" style="height:120px;margin-bottom:10px" wx:for="{{[1,2,3]}}" wx:key="*this"></view></view>
-  <view wx:elif="{{list.length===0}}"><view class="empty-state"><text class="empty-state-icon">{{search?'🔍':'📭'}}</text><text class="empty-state-text">{{search?'未找到相关项目':'暂无项目'}}</text><text class="empty-state-sub" wx:if="{{search}}">试试其他关键词或调整筛选条件</text></view></view>
-  <view wx:else><project-card wx:for="{{list}}" wx:key="_id" project="{{item}}"/></view>
-  <view class="pagination" wx:if="{{totalPages>1}}">
-    <text class="page-btn" bindtap="prevPage" style="{{page<=1?'opacity:0.4':''}}">上一页</text>
-    <text class="page-info">{{page}}/{{totalPages}}</text>
-    <text class="page-btn" bindtap="nextPage" style="{{page>=totalPages?'opacity:0.4':''}}">下一页</text>
+
+  <view class="section">
+    <view wx:if="{{loading}}">
+      <view class="skeleton" style="height:400rpx;margin-bottom:24rpx;border-radius:32rpx" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+    </view>
+    <view wx:elif="{{list.length===0}}" class="empty-state">
+      <text class="empty-state-icon">{{search?'🔍':'📭'}}</text>
+      <text class="empty-state-text">{{search?'未找到相关项目':'暂无项目'}}</text>
+      <text class="empty-state-sub" wx:if="{{search}}">试试其他关键词或调整筛选条件</text>
+    </view>
+    <view wx:else>
+      <project-card wx:for="{{list}}" wx:key="_id" project="{{item}}"/>
+    </view>
+
+    <view class="pagination" wx:if="{{totalPages>1}}">
+      <text class="page-btn" bindtap="prevPage" style="{{page<=1?'opacity:0.4':''}}">上一页</text>
+      <text class="page-info">{{page}}/{{totalPages}}</text>
+      <text class="page-btn" bindtap="nextPage" style="{{page>=totalPages?'opacity:0.4':''}}">下一页</text>
+    </view>
   </view>
-  <view style="height:10px"/>
+
+  <view style="height:120rpx"></view>
 </view>

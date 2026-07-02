@@ -21,6 +21,9 @@ Page({
     this.fetchList(1)
   },
   onShow(){
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 1 })
+    }
     const app = getApp()
     if (app.globalData.pendingField) {
       this.setData({ search: app.globalData.pendingField, fieldIdx: 0, typeIdx: 0, yearIdx: 0, statusVal: '' })

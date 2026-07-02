@@ -7,7 +7,6 @@ Page({
     if (!params.id) return
     callFunction('getProject', { id: params.id }).then(p => {
       this.setData({ project: p, voteCount: p.voteCount || 0, tags: parseTags(p.tags), loading: false })
-      // Check if user has voted
       const token = wx.getStorageSync('token')
       if (token) {
         callFunction('getUserVote', { projectId: params.id }).then(r => {
@@ -16,6 +15,7 @@ Page({
       }
     }).catch(() => { wx.showToast({ title: '加载失败', icon: 'none' }); wx.navigateBack() })
   },
+  goBack() { wx.navigateBack() },
   toggleVote() {
     const token = wx.getStorageSync('token')
     if (!token) { wx.navigateTo({ url: '/pages/login/login' }); return }
