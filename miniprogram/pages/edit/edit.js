@@ -1,8 +1,8 @@
-const { callFunction, uploadImage, fields, years, types, typeValues, durationOpts, recruitCountOpts } = require('../../utils/api')
+const { callFunction, uploadImage, uploadImages, parseImages, getTempUrls, getTempUrl, fields, years, types, typeValues, durationOpts, recruitCountOpts } = require('../../utils/api')
 Page({
   data: {
     id: '', loading: false, fetching: true, error: '',
-    title:'', abstract:'', content:'', field:0, tags:'', thumbnail:'',
+    title:'', abstract:'', content:'', field:0, tags:'', thumbnail:'', thumbUrl:'', images:'', imageUrls:[],
     studentName:'', institution:'', year:2, type:0, status:'COMPLETED',
     members:'', advisor:'', resultLinks:'',
     recruitCount:0, contactInfo:'', expectedDuration:'', recruitRequirements:'',
@@ -15,7 +15,7 @@ Page({
       this.setData({
         title: p.title, abstract: p.abstract, content: p.content,
         field: Math.max(0, fields.indexOf(p.field)),
-        tags: p.tags, thumbnail: p.thumbnail || '',
+        tags: p.tags, thumbnail: p.thumbnail || '', images: p.images || '',
         studentName: p.studentName, institution: p.institution,
         year: Math.max(0, years.indexOf(String(p.year || ''))),
         type: Math.max(0, typeValues.indexOf(p.type)),
@@ -26,6 +26,12 @@ Page({
         isRecruit: p.status === 'RECRUITING',
         fetching: false,
       })
+      if (p.images) {
+        getTempUrls(p.images).then(urls => this.setData({ imageUrls: urls }))
+      }
+      if (p.thumbnail) {
+        getTempUrl(p.thumbnail).then(url => this.setData({ thumbUrl: url }))
+      }
     }).catch(() => { wx.showToast({ title: '加载失败', icon: 'none' }); wx.navigateBack() })
   },
   onInput(e) { this.setData({ [e.currentTarget.dataset.field]: e.detail.value }) },
@@ -39,6 +45,20 @@ Page({
       this.setData({ thumbnail: fileID })
     }).catch(() => {})
   },
+  pickImages() {
+    uploadImages(this.data.images).then(result => {
+      this.setData({ images: result })
+      getTempUrls(result).then(urls => this.setData({ imageUrls: urls }))
+    }).catch(() => {})
+  },
+  removeImage(e) {
+    const idx = e.currentTarget.dataset.index
+    const imgs = parseImages(this.data.images)
+    const urls = this.data.imageUrls.slice()
+    imgs.splice(idx, 1)
+    urls.splice(idx, 1)
+    this.setData({ images: imgs.join(','), imageUrls: urls })
+  },
   toggleStatus(e) {
     const v = e.currentTarget.dataset.value
     this.setData({ status: v, isRecruit: v === 'RECRUITING' })
@@ -51,6 +71,7 @@ Page({
       title: d.title, abstract: d.abstract, content: d.content,
       field: d.fields[d.field], tags: d.tags,
       thumbnail: d.thumbnail || undefined,
+      images: d.images || undefined,
       studentName: d.studentName, institution: d.institution,
       year: d.years[d.year], type: d.typeValues[d.type],
       status: d.status,

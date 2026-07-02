@@ -1,8 +1,20 @@
 <view class="detail-wrap" wx:if="{{!loading}}">
-  <!-- Hero Image -->
-  <view class="detail-hero">
-    <image class="detail-img" src="{{project.thumbnail}}" mode="aspectFill" wx:if="{{project.thumbnail}}"/>
-    <view class="detail-thumb" wx:else>🔬</view>
+  <!-- Image Gallery -->
+  <view class="detail-hero" wx:if="{{allImages.length > 0}}">
+    <image class="detail-img" src="{{allImages[imgIndex]}}" mode="aspectFill" bindtap="previewImg"/>
+    <view class="back-btn" bindtap="goBack">‹</view>
+    <!-- prev/next arrows -->
+    <view class="arrow arrow-left" bindtap="prevImg" wx:if="{{allImages.length > 1}}">‹</view>
+    <view class="arrow arrow-right" bindtap="nextImg" wx:if="{{allImages.length > 1}}">›</view>
+    <!-- dots -->
+    <view class="img-dots" wx:if="{{allImages.length > 1}}">
+      <view class="dot {{idx === imgIndex ? 'active' : ''}}" wx:for="{{allImages}}" wx:key="*this" wx:for-index="idx"></view>
+    </view>
+    <!-- counter -->
+    <view class="img-counter" wx:if="{{allImages.length > 1}}">{{imgIndex + 1}}/{{allImages.length}}</view>
+  </view>
+  <view class="detail-hero" wx:else>
+    <view class="detail-thumb">🔬</view>
     <view class="back-btn" bindtap="goBack">‹</view>
   </view>
 

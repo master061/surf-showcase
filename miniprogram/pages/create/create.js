@@ -1,4 +1,4 @@
-const { callFunction, uploadImage, fields, years, types, typeValues, durationOpts, recruitCountOpts } = require('../../utils/api')
+const { callFunction, uploadImage, uploadImages, parseImages, getTempUrls, getTempUrl, fields, years, types, typeValues, durationOpts, recruitCountOpts } = require('../../utils/api')
 const app = getApp()
 
 Page({
@@ -13,7 +13,7 @@ Page({
     advisor: '', members: '',
 
     // Project content
-    abstract: '', content: '', tags: '', thumbnail: '',
+    abstract: '', content: '', tags: '', thumbnail: '', thumbUrl: '', images: '', imageUrls: [],
 
     // Contact
     contactInfo: '', projectUrl: '',
@@ -75,7 +75,22 @@ Page({
   pickThumb() {
     uploadImage().then(fileID => {
       this.setData({ thumbnail: fileID })
+      getTempUrl(fileID).then(url => this.setData({ thumbUrl: url }))
     }).catch(() => {})
+  },
+  pickImages() {
+    uploadImages(this.data.images).then(result => {
+      this.setData({ images: result })
+      getTempUrls(result).then(urls => this.setData({ imageUrls: urls }))
+    }).catch(() => {})
+  },
+  removeImage(e) {
+    const idx = e.currentTarget.dataset.index
+    const imgs = parseImages(this.data.images)
+    const urls = this.data.imageUrls.slice()
+    imgs.splice(idx, 1)
+    urls.splice(idx, 1)
+    this.setData({ images: imgs.join(','), imageUrls: urls })
   },
 
   submitAndReview() {
@@ -85,6 +100,7 @@ Page({
       title: d.title, abstract: d.abstract, content: d.content || '',
       field: d.fields[d.field], tags: d.tags,
       thumbnail: d.thumbnail || undefined,
+      images: d.images || undefined,
       studentName: d.studentName, institution: d.institution,
       year: d.years[d.year], type: d.typeValues[d.type],
       status: d.status, advisor: d.advisor,

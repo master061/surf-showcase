@@ -1,12 +1,22 @@
-const { callFunction, typeLabels, formatDate, parseTags } = require('../../utils/api')
+const { callFunction, typeLabels, formatDate, parseTags, getTempUrls, getTempUrl } = require('../../utils/api')
 const app = getApp()
 Page({
-  data: { project: null, loading: true, voted: false, voteCount: 0, tags: [], typeLabels, user: null, expandedAbstract: false, expandedContent: false },
+  data: { project: null, loading: true, voted: false, voteCount: 0, tags: [],
+    allImages: [], imgIndex: 0, typeLabels, user: null,
+    expandedAbstract: false, expandedContent: false },
   onLoad(params) {
     this.setData({ user: app.globalData.user })
     if (!params.id) return
     callFunction('getProject', { id: params.id }).then(p => {
       this.setData({ project: p, voteCount: p.voteCount || 0, tags: parseTags(p.tags), loading: false })
+      // Build combined image list: thumbnail + project images
+      const parts = []
+      if (p.thumbnail) parts.push(p.thumbnail)
+      if (p.images) parts.push(p.images)
+      const combined = parts.join(',')
+      if (combined) {
+        getTempUrls(combined).then(urls => this.setData({ allImages: urls }))
+      }
       const token = wx.getStorageSync('token')
       if (token) {
         callFunction('getUserVote', { projectId: params.id }).then(r => {
@@ -37,6 +47,22 @@ Page({
     const app = getApp()
     app.globalData.posterProject = this.data.project
     wx.navigateTo({ url: '/pages/poster/poster' })
+  },
+  prevImg() {
+    const i = this.data.imgIndex
+    if (i > 0) this.setData({ imgIndex: i - 1 })
+    else this.setData({ imgIndex: this.data.allImages.length - 1 })
+  },
+  nextImg() {
+    const i = this.data.imgIndex
+    if (i < this.data.allImages.length - 1) this.setData({ imgIndex: i + 1 })
+    else this.setData({ imgIndex: 0 })
+  },
+  previewImg() {
+    wx.previewImage({
+      urls: this.data.allImages,
+      current: this.data.allImages[this.data.imgIndex],
+    })
   },
   toggleAbstract() { this.setData({ expandedAbstract: !this.data.expandedAbstract }) },
   toggleContent() { this.setData({ expandedContent: !this.data.expandedContent }) },

@@ -21,10 +21,21 @@
     <view class="form-group"><text class="form-label">摘要 *</text><textarea class="form-input form-textarea" value="{{abstract}}" bindinput="onInput" data-field="abstract" style="min-height:70px"/></view>
     <view class="form-group"><text class="form-label">封面图</text>
       <view class="thumb-picker" bindtap="pickThumb">
-        <image class="thumb-preview" src="{{thumbnail}}" mode="aspectFill" wx:if="{{thumbnail}}"/>
+        <image class="thumb-preview" src="{{thumbUrl || thumbnail}}" mode="aspectFill" wx:if="{{thumbUrl || thumbnail}}"/>
         <view class="thumb-placeholder" wx:else><text class="thumb-icon">📷</text><text class="thumb-text">点击选择封面图</text></view>
       </view>
       <input class="form-input" value="{{thumbnail}}" bindinput="onInput" data-field="thumbnail" placeholder="或输入图片URL" style="margin-top:8px"/>
+    </view>
+    <view class="form-group"><text class="form-label">项目图片（可多选，最多9张）</text>
+      <view class="img-grid" wx:if="{{imageUrls.length > 0}}">
+        <view class="img-cell" wx:for="{{imageUrls}}" wx:key="*this">
+          <image class="img-cell-pic" src="{{item}}" mode="aspectFill"/>
+          <view class="img-cell-del" bindtap="removeImage" data-index="{{index}}">✕</view>
+        </view>
+      </view>
+      <view class="thumb-picker" bindtap="pickImages" style="height:100px" wx:if="{{imageUrls.length < 9}}">
+        <view class="thumb-placeholder"><text class="thumb-icon">🖼️</text><text class="thumb-text">点击选择{{imageUrls.length > 0 ? '更多' : '项目'}}图片</text></view>
+      </view>
     </view>
     <view class="form-group"><text class="form-label">标签（逗号分隔）</text><input class="form-input" value="{{tags}}" bindinput="onInput" data-field="tags"/></view>
 

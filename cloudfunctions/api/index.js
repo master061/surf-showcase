@@ -163,7 +163,7 @@ async function createProject(openid, token, data) {
     year, type, status, members, advisor, resultLinks,
     recruitCount, contactInfo, expectedDuration, recruitRequirements,
     methodology, researchMethods, processResults, conclusion,
-    acknowledgments, references, projectUrl, socialLinks, contentImages,
+    acknowledgments, references, projectUrl, socialLinks, contentImages, images,
   } = data
   if (!title || !abstract || !field) return { code: 400, error: '标题、摘要和领域为必填项' }
   const r = await db.collection(PROJECTS).add({
@@ -180,7 +180,7 @@ async function createProject(openid, token, data) {
       processResults: processResults || null, conclusion: conclusion || null,
       acknowledgments: acknowledgments || null, references: references || null,
       projectUrl: projectUrl || null, socialLinks: socialLinks || null,
-      contentImages: contentImages || null, rejectReason: null,
+      contentImages: contentImages || null, images: images || null, rejectReason: null,
       createdAt: now(), updatedAt: now(),
     },
   })
@@ -195,7 +195,7 @@ async function updateProject(openid, token, id, data) {
     if (!p) return { code: 404, error: '项目不存在' }
     if (p.userId !== user._id && user.role !== 'ADMIN') return { code: 403, error: '无权限' }
     const upd = {}
-    const strFields = ['title', 'abstract', 'content', 'field', 'tags', 'thumbnail', 'studentName', 'institution', 'status', 'members', 'advisor', 'resultLinks', 'contactInfo', 'expectedDuration', 'recruitRequirements', 'methodology', 'researchMethods', 'processResults', 'conclusion', 'acknowledgments', 'references', 'projectUrl', 'socialLinks', 'contentImages', 'rejectReason']
+    const strFields = ['title', 'abstract', 'content', 'field', 'tags', 'thumbnail', 'studentName', 'institution', 'status', 'members', 'advisor', 'resultLinks', 'contactInfo', 'expectedDuration', 'recruitRequirements', 'methodology', 'researchMethods', 'processResults', 'conclusion', 'acknowledgments', 'references', 'projectUrl', 'socialLinks', 'contentImages', 'images', 'rejectReason']
     strFields.forEach(f => { if (data[f] !== undefined) upd[f] = data[f] })
     if (data.year !== undefined) upd.year = parseInt(data.year)
     if (data.type !== undefined) upd.type = data.type

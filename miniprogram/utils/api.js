@@ -72,7 +72,76 @@ function uploadImage() {
   })
 }
 
+// 多图上传 — 从相册选择多张图片并逐一上传到云存储
+function uploadImages(existing = '') {
+  const existingList = existing ? existing.split(',').filter(Boolean) : []
+  return new Promise((resolve, reject) => {
+    wx.chooseImage({
+      count: 9 - existingList.length,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success(res) {
+        const files = res.tempFilePaths
+        let done = 0
+        const results = [...existingList]
+        wx.showLoading({ title: '上传中 0/' + files.length })
+        files.forEach((filePath, idx) => {
+          const cloudPath = 'images/' + Date.now() + '-' + idx + '-' + Math.random().toString(36).slice(-6) + '.' + (filePath.match(/\.(\w+)$/)?.[1] || 'jpg')
+          wx.cloud.uploadFile({
+            cloudPath,
+            filePath,
+            success: (uploadRes) => {
+              done++
+              wx.showLoading({ title: '上传中 ' + done + '/' + files.length })
+              results[existingList.length + idx] = uploadRes.fileID
+              if (done === files.length) {
+                wx.hideLoading()
+                resolve(results.filter(Boolean).join(','))
+              }
+            },
+            fail: (err) => {
+              wx.hideLoading()
+              reject(err)
+            },
+          })
+        })
+      },
+      fail: reject,
+    })
+  })
+}
+
+// 解析图片字符串为数组
+function parseImages(str) {
+  if (!str) return []
+  return String(str).split(',').map(s => s.trim()).filter(Boolean)
+}
+
+// 将 cloud:// 文件 ID 转为可显示的临时 HTTPS URL
+function getTempUrls(cloudIdsStr) {
+  const fileIDs = parseImages(cloudIdsStr)
+  if (!fileIDs.length) return Promise.resolve([])
+  return wx.cloud.getTempFileURL({ fileList: fileIDs }).then(res => {
+    return res.fileList.map(f => f.tempFileURL || '').filter(Boolean)
+  }).catch(() => {
+    // 模拟器降级：逐个 downloadFile
+    return Promise.all(fileIDs.map(id => {
+      if (!id || !id.startsWith('cloud://')) return Promise.resolve('')
+      return wx.cloud.downloadFile({ fileID: id })
+        .then(r => r.tempFilePath || '')
+        .catch(() => '')
+    })).then(paths => paths.filter(Boolean))
+  })
+}
+
+// 单张图片 URL 转换
+function getTempUrl(cloudId) {
+  if (!cloudId) return Promise.resolve('')
+  return getTempUrls(cloudId).then(urls => urls[0] || '')
+}
+
 module.exports = {
-  callFunction, uploadImage, typeLabels, statusStyles, formatDate, parseTags,
+  callFunction, uploadImage, uploadImages, parseImages, getTempUrls, getTempUrl,
+  typeLabels, statusStyles, formatDate, parseTags,
   fields, years, types, typeValues, yearOpts, durationOpts, recruitCountOpts,
 }

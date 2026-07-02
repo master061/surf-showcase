@@ -1,8 +1,6 @@
 <view class="poster-page">
-  <!-- Close button -->
   <view class="close-btn" bindtap="close">✕</view>
 
-  <!-- Hidden canvas -->
   <canvas canvas-id="posterCanvas" class="hidden-canvas"></canvas>
 
   <block wx:if="{{!previewPath}}">
