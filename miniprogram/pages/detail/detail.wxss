@@ -49,5 +49,5 @@
 .owner-btn.edit { background: #F5F8FF; color: #007aff; border: 1rpx solid rgba(0,122,255,0.2); }
 .owner-btn.delete { background: #FEF2F2; color: #DC2626; }
 
-.poster-action { text-align: center; padding: 20rpx; margin: 24rpx; font-size: 24rpx; color: #B8860B; border: 1rpx solid #F5E6B8; border-radius: 16rpx; background: #FFF8E1; }
-.report-action { text-align: center; padding: 20rpx; margin: 24rpx; font-size: 24rpx; color: #9CA3AF; border: 1rpx solid #E5E5EA; border-radius: 16rpx; }
+.poster-action { text-align: center; padding: 20rpx; margin: 24rpx 0; font-size: 24rpx; color: #B8860B; border: 1rpx solid #F5E6B8; border-radius: 16rpx; background: #FFF8E1; }
+.report-action { text-align: center; padding: 20rpx; margin: 24rpx 0; font-size: 24rpx; color: #9CA3AF; border: 1rpx solid #E5E5EA; border-radius: 16rpx; }
